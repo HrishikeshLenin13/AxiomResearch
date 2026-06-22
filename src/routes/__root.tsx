@@ -60,9 +60,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootComponent() {
   const loc = useLocation();
+  const isAdmin = loc.pathname === "/admin";
   return (
     <div className="relative min-h-screen bg-background text-foreground antialiased">
-      <Navbar />
+      {!isAdmin && <Navbar />}
       <AnimatePresence mode="wait">
         <motion.main
           key={loc.pathname}
@@ -74,7 +75,7 @@ function RootComponent() {
           <Outlet />
         </motion.main>
       </AnimatePresence>
-      <Footer />
+      {!isAdmin && <Footer />}
     </div>
   );
 }
