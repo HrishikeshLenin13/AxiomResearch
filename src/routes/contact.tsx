@@ -20,9 +20,9 @@ function ContactPage() {
       <PageHero
         eyebrow="Contact"
         title={<>Let's <span className="text-gradient-brand">talk.</span></>}
-        sub="Partnerships, press, volunteer interest, or just a question — drop us a line and a real human will get back to you."
+        sub="Partnerships, press, volunteer interest, or general questions — send us a note and the team will follow up."
       />
-      <section className="relative pb-32 px-6">
+      <section className="relative pb-28 md:pb-32 px-6">
         <div className="mx-auto max-w-6xl grid lg:grid-cols-5 gap-8">
           <Reveal className="lg:col-span-3">
             <div className="glass-strong rounded-3xl p-8 md:p-10 relative overflow-hidden h-full flex flex-col justify-center">
@@ -30,7 +30,7 @@ function ContactPage() {
               <div className="relative text-center">
                 <h3 className="text-2xl font-display font-semibold mb-3">Reach out to us</h3>
                 <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                  Fill out our quick form and we'll get back to you as soon as possible.
+                  Use the short contact form and we'll get back to you as soon as possible.
                 </p>
                 <motion.a
                   href="https://tally.so/r/gDJLWP"
@@ -38,7 +38,7 @@ function ContactPage() {
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
-                  className="inline-flex items-center gap-2 rounded-full bg-white text-background px-8 py-4 text-base font-medium"
+                  className="inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-8 py-4 text-base font-medium"
                 >
                   Open Contact Form <ExternalLink size={16} />
                 </motion.a>
@@ -49,7 +49,7 @@ function ContactPage() {
           <Reveal delay={0.1} className="lg:col-span-2 space-y-4">
             <InfoCard icon={Mail} title="Email" body="axiomresearchteam@gmail.com" />
             <InfoCard icon={Sparkles} title="Press" body="axiomresearchteam@gmail.com" />
-            <InfoCard icon={MapPin} title="HQ" body="Distributed across 20+ countries" />
+            <InfoCard icon={MapPin} title="Team" body="Remote student-led organization" />
           </Reveal>
         </div>
       </section>
@@ -59,7 +59,7 @@ function ContactPage() {
 
 function InfoCard({ icon: Icon, title, body }: { icon: any; title: string; body: string }) {
   return (
-    <div className="glass rounded-3xl p-6 flex items-center gap-4">
+    <div className="glass rounded-3xl p-6 md:p-7 flex items-center gap-4">
       <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-violet/40 to-cyan-glow/20 border border-white/10 grid place-items-center">
         <Icon size={18} className="text-cyan-glow" />
       </div>

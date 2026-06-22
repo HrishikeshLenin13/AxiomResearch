@@ -13,7 +13,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Axiom — Empowering the Next Generation of Researchers" },
-      { name: "description", content: "Axiom helps high school students worldwide learn research, collaborate, and publish meaningful academic work." },
+      { name: "description", content: "Axiom helps high school students learn research, collaborate, and share meaningful academic work." },
     ],
   }),
   component: HomePage,
@@ -28,7 +28,6 @@ function HomePage() {
       <Programs />
       <HowItWorks />
       <Internships />
-      <FAQ />
       <CTA />
     </>
   );
@@ -80,7 +79,7 @@ function Hero() {
           transition={{ duration: 0.8, delay: 0.3 }}
           className="mt-7 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
         >
-          A nonprofit initiative helping high school students learn research, collaborate globally, publish papers, and contribute meaningful ideas to the world.
+          A nonprofit initiative helping high school students learn research methods, collaborate with peers, and share thoughtful academic work.
         </motion.p>
 
         <motion.div
@@ -91,9 +90,9 @@ function Hero() {
         >
           <Link
             to="/volunteer"
-            className="group inline-flex items-center gap-2 rounded-full bg-white text-background px-6 py-3 text-sm font-medium hover:scale-[1.03] transition-transform shadow-lg shadow-violet/30"
+            className="group inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-6 py-3 text-sm font-medium hover:scale-[1.03] transition-transform shadow-lg shadow-violet/30"
           >
-            Join the Movement
+            Get Involved
             <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
           </Link>
           <Link
@@ -123,11 +122,11 @@ function Hero() {
 function WhyResearch() {
   const cards = [
     { icon: Brain, title: "Critical thinking", desc: "Research trains students to question assumptions, evaluate evidence, and reason from first principles." },
-    { icon: Users, title: "Global collaboration", desc: "Working across borders and disciplines unlocks ideas no individual could reach alone." },
+    { icon: Users, title: "Collaborative learning", desc: "Working with peers and mentors helps students strengthen ideas through dialogue and feedback." },
     { icon: MessageSquare, title: "Mentorship matters", desc: "Expert feedback shortens the path from curiosity to contribution by years." },
     { icon: GitBranch, title: "Peer review", desc: "Honest critique from peers sharpens every idea — and builds the rigor real science demands." },
-    { icon: Lightbulb, title: "Original innovation", desc: "Students aren't just learning what's known. They're discovering what comes next." },
-    { icon: BookOpen, title: "Public knowledge", desc: "Open-access publishing means every contribution adds to the world's commons." },
+    { icon: Lightbulb, title: "Original inquiry", desc: "Students learn to move from curiosity to focused, evidence-based questions." },
+    { icon: BookOpen, title: "Shared knowledge", desc: "Clear writing and responsible publishing help student work reach the right audience." },
   ];
   return (
     <Section eyebrow="Why research matters" title={<>The future is built<br /><span className="text-gradient-brand">by curious minds.</span></>}>
@@ -172,7 +171,7 @@ function Mission() {
       <div className="grid lg:grid-cols-5 gap-10 items-start">
         <Reveal className="lg:col-span-3">
           <p className="text-xl md:text-2xl leading-relaxed text-foreground/90">
-            Research opportunities have historically belonged to a privileged few. Axiom exists to change that — building a global pipeline where any motivated high school student can learn the craft of inquiry, work alongside mentors, and contribute real ideas to the world.
+            Research opportunities can be difficult to access early. Axiom helps motivated high school students learn the craft of inquiry, work with mentors, and develop thoughtful academic projects.
           </p>
           <p className="mt-6 text-muted-foreground leading-relaxed">
             We believe the next generation of scientists, engineers, economists, and thinkers is already here. They just need a door open.
@@ -354,9 +353,9 @@ const FAQ_CATEGORIES = ["All", "Getting started", "Programs", "Volunteering"] as
 type FaqCat = (typeof FAQ_CATEGORIES)[number];
 
 const FAQ_ITEMS: { q: string; a: string; cat: Exclude<FaqCat, "All"> }[] = [
-  { q: "What is Axiom?", a: "Axiom is a global, student-led nonprofit that teaches high schoolers how to conduct, collaborate on, and publish academic research.", cat: "Getting started" },
+  { q: "What is Axiom?", a: "Axiom is a student-led nonprofit that teaches high schoolers how to conduct, collaborate on, and publish academic research.", cat: "Getting started" },
   { q: "Can beginners join?", a: "Absolutely. Our Research Foundations program assumes zero prior experience and walks you through every step.", cat: "Getting started" },
-  { q: "Is this free?", a: "Yes. Axiom is a nonprofit. All core programs are free to participating students worldwide.", cat: "Getting started" },
+  { q: "Is this free?", a: "Yes. Axiom is a nonprofit. Core programs are free for participating students.", cat: "Getting started" },
   { q: "Do students actually publish papers?", a: "Yes — through our Open Research Database, partner journals, and collaborative team submissions.", cat: "Programs" },
   { q: "How does peer review work?", a: "Trained student reviewers and mentors evaluate submissions for rigor, originality, and clarity before publication.", cat: "Programs" },
   { q: "Are mentors guaranteed?", a: "Foundations students receive program-level mentorship. Mentored Research participants are paired 1:1 after admission.", cat: "Programs" },
@@ -525,7 +524,7 @@ function CTA() {
             Join the future of<br /><span className="text-gradient-brand">student research.</span>
           </h2>
           <div className="relative mt-10 flex flex-wrap items-center justify-center gap-3">
-            <Link to="/programs" className="rounded-full bg-white text-background px-6 py-3 text-sm font-medium hover:scale-[1.03] transition">Apply Now</Link>
+            <Link to="/programs" className="rounded-full bg-primary text-primary-foreground px-6 py-3 text-sm font-medium hover:scale-[1.03] transition">Apply Now</Link>
             <Link to="/volunteer" className="rounded-full glass px-6 py-3 text-sm font-medium hover:bg-white/10 transition">Become a Volunteer</Link>
             <Link to="/about" className="rounded-full px-6 py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition inline-flex items-center gap-1">
               Learn More <ArrowUpRight size={14} />

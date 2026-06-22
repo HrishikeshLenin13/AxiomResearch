@@ -18,7 +18,7 @@ const groups = [
   {
     title: "Getting started",
     items: [
-      { q: "What is Axiom?", a: "Axiom is a global student-led nonprofit democratizing academic research for high school students through structured programs, mentorship, and open publishing." },
+      { q: "What is Axiom?", a: "Axiom is a student-led nonprofit helping high school students learn academic research through structured programs, mentorship, and open publishing." },
       { q: "Can beginners join?", a: "Yes. The Research Foundations program is built for students with zero prior research experience." },
       { q: "Is this free?", a: "Yes. All core Axiom programs are free for participating students." },
     ],
@@ -48,7 +48,7 @@ function FaqPage() {
         title={<>Everything you need <span className="text-gradient-brand">to know.</span></>}
         sub="Still curious? Reach out — we read every message."
       />
-      <section className="relative pb-32 px-6">
+      <section className="relative pb-28 md:pb-32 px-6">
         <div className="mx-auto max-w-3xl space-y-12">
           {groups.map((g, gi) => (
             <Reveal key={g.title} delay={gi * 0.05}>
@@ -69,7 +69,7 @@ function FaqPage() {
 function Item({ q, a }: { q: string; a: string; i: number }) {
   const [open, setOpen] = useState(false);
   return (
-    <motion.div layout className="glass rounded-2xl overflow-hidden">
+    <motion.div layout className="glass rounded-3xl overflow-hidden">
       <button onClick={() => setOpen((o) => !o)} className="w-full flex items-center justify-between p-5 text-left">
         <span className="font-medium pr-4">{q}</span>
         <motion.span animate={{ rotate: open ? 45 : 0 }} className="text-2xl text-muted-foreground leading-none">+</motion.span>

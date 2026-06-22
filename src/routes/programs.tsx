@@ -65,11 +65,11 @@ function ProgramsPage() {
         title={<>Four pathways into <span className="text-gradient-brand">real research.</span></>}
         sub="Whether you're brand new to research or ready to publish, there's a program that meets you where you are — and pushes you forward."
       />
-      <section className="relative pb-32 px-6">
+      <section className="relative pb-28 md:pb-32 px-6">
         <div className="mx-auto max-w-6xl space-y-6">
           {programs.map((p, i) => (
             <Reveal key={p.title} delay={i * 0.06}>
-              <motion.div whileHover={{ y: -4 }} className="group relative glass rounded-3xl p-8 md:p-12 overflow-hidden">
+              <motion.div whileHover={{ y: -4 }} className="group relative glass rounded-3xl p-6 md:p-10 overflow-hidden">
                 <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-violet/15 blur-3xl opacity-0 group-hover:opacity-100 transition duration-700" />
                 <div className="relative grid md:grid-cols-12 gap-8 items-start">
                   <div className="md:col-span-4">

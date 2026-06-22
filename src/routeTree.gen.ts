@@ -13,6 +13,7 @@ import { Route as VolunteerRouteImport } from './routes/volunteer'
 import { Route as ResearchRouteImport } from './routes/research'
 import { Route as ProgramsRouteImport } from './routes/programs'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as CourseRouteImport } from './routes/course'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as AboutRouteImport } from './routes/about'
@@ -36,6 +37,11 @@ const ProgramsRoute = ProgramsRouteImport.update({
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CourseRoute = CourseRouteImport.update({
+  id: '/course',
+  path: '/course',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
+  '/course': typeof CourseRoute
   '/faq': typeof FaqRoute
   '/programs': typeof ProgramsRoute
   '/research': typeof ResearchRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
+  '/course': typeof CourseRoute
   '/faq': typeof FaqRoute
   '/programs': typeof ProgramsRoute
   '/research': typeof ResearchRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
+  '/course': typeof CourseRoute
   '/faq': typeof FaqRoute
   '/programs': typeof ProgramsRoute
   '/research': typeof ResearchRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/careers'
     | '/contact'
+    | '/course'
     | '/faq'
     | '/programs'
     | '/research'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/careers'
     | '/contact'
+    | '/course'
     | '/faq'
     | '/programs'
     | '/research'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/careers'
     | '/contact'
+    | '/course'
     | '/faq'
     | '/programs'
     | '/research'
@@ -128,6 +140,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   CareersRoute: typeof CareersRoute
   ContactRoute: typeof ContactRoute
+  CourseRoute: typeof CourseRoute
   FaqRoute: typeof FaqRoute
   ProgramsRoute: typeof ProgramsRoute
   ResearchRoute: typeof ResearchRoute
@@ -162,6 +175,13 @@ declare module '@tanstack/react-router' {
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/course': {
+      id: '/course'
+      path: '/course'
+      fullPath: '/course'
+      preLoaderRoute: typeof CourseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -200,6 +220,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   CareersRoute: CareersRoute,
   ContactRoute: ContactRoute,
+  CourseRoute: CourseRoute,
   FaqRoute: FaqRoute,
   ProgramsRoute: ProgramsRoute,
   ResearchRoute: ResearchRoute,

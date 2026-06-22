@@ -14,15 +14,15 @@ export function Footer() {
               <span className="font-display font-semibold text-xl">Axiom</span>
             </Link>
             <p className="mt-5 text-muted-foreground max-w-md leading-relaxed">
-              A nonprofit initiative democratizing academic research for high school students worldwide — teaching, collaborating, and publishing the ideas that shape tomorrow.
+              A nonprofit initiative helping high school students learn research, collaborate, and share thoughtful academic work.
             </p>
-            <form className="mt-7 flex max-w-sm gap-2">
+            <form className="mt-7 flex max-w-sm flex-col sm:flex-row gap-2">
               <input
                 type="email"
-                placeholder="you@school.edu"
-                className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:border-violet"
+                placeholder="Email address"
+                className="flex-1 bg-white/40 border border-border rounded-full px-4 py-2.5 text-sm focus:outline-none focus:border-violet"
               />
-              <button className="rounded-full bg-white text-background px-4 py-2.5 text-sm font-medium hover:bg-white/90 transition">
+              <button className="rounded-full bg-primary text-primary-foreground px-4 py-2.5 text-sm font-medium hover:bg-primary/90 transition">
                 Subscribe
               </button>
             </form>
@@ -32,6 +32,7 @@ export function Footer() {
             <FCol title="Explore" links={[
               { to: "/about", label: "About Us" },
               { to: "/programs", label: "Programs" },
+              { to: "/course", label: "Course" },
               { to: "/research", label: "Research" },
               { to: "/faq", label: "FAQ" },
             ]} />

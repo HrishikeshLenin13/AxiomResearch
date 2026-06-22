@@ -4,7 +4,7 @@ import { ParticleField } from "./ParticleField";
 
 export function PageHero({ eyebrow, title, sub }: { eyebrow: string; title: ReactNode; sub: string }) {
   return (
-    <section className="relative pt-40 pb-20 overflow-hidden">
+    <section className="relative pt-36 md:pt-40 pb-16 md:pb-20 overflow-hidden">
       <div className="absolute inset-0 bg-hero-gradient" />
       <div className="absolute inset-0 grid-bg opacity-40" />
       <ParticleField density={40} />
@@ -30,7 +30,7 @@ export function PageHero({ eyebrow, title, sub }: { eyebrow: string; title: Reac
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.25 }}
-          className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed"
+          className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed"
         >
           {sub}
         </motion.p>

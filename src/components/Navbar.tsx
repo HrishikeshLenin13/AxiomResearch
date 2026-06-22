@@ -8,6 +8,7 @@ const links = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
   { to: "/programs", label: "Programs" },
+  { to: "/course", label: "Course" },
   { to: "/volunteer", label: "Volunteer" },
   { to: "/careers", label: "Careers" },
   { to: "/research", label: "Research" },
@@ -77,7 +78,7 @@ export function Navbar() {
           <div className="hidden lg:block">
             <Link
               to="/volunteer"
-              className="inline-flex items-center gap-2 rounded-full bg-white text-background px-4 py-2 text-sm font-medium hover:bg-white/90 transition"
+              className="inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition"
             >
               Join Axiom
             </Link>
@@ -109,7 +110,7 @@ export function Navbar() {
                   {l.label}
                 </Link>
               ))}
-              <Link to="/volunteer" className="mt-2 text-center bg-white text-background rounded-xl px-4 py-3 font-medium">
+              <Link to="/volunteer" className="mt-2 text-center bg-primary text-primary-foreground rounded-xl px-4 py-3 font-medium">
                 Join Axiom
               </Link>
             </motion.div>

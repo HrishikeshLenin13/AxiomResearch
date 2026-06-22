@@ -29,12 +29,12 @@ function VolunteerPage() {
         title={<>Give time. <span className="text-gradient-brand">Build the network.</span></>}
         sub="Axiom runs entirely on student volunteers. Whatever you bring — reviewing, mentoring, organizing, building — there's a role that needs you."
       />
-      <section className="relative pb-32 px-6">
+      <section className="relative pb-28 md:pb-32 px-6">
         <div className="mx-auto max-w-6xl">
           <div className="grid md:grid-cols-2 gap-5">
             {roles.map((r, i) => (
               <Reveal key={r.t} delay={i * 0.07}>
-                <motion.div whileHover={{ y: -4 }} className="glass rounded-3xl p-8 h-full group">
+                <motion.div whileHover={{ y: -4 }} className="glass rounded-3xl p-6 md:p-8 h-full group">
                   <div className="flex items-start justify-between mb-5">
                     <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet/40 to-cyan-glow/20 border border-white/10 grid place-items-center">
                       <r.icon size={20} className="text-cyan-glow" />
@@ -49,13 +49,13 @@ function VolunteerPage() {
           </div>
 
           <Reveal>
-            <div className="mt-16 glass-strong rounded-3xl p-10 md:p-14 text-center relative overflow-hidden">
+            <div className="mt-14 md:mt-16 glass-strong rounded-3xl p-8 md:p-12 text-center relative overflow-hidden">
               <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[30rem] h-[30rem] rounded-full bg-violet/20 blur-3xl" />
               <h3 className="relative text-3xl md:text-4xl font-semibold text-gradient">Volunteer hours, real impact.</h3>
               <p className="relative mt-4 text-muted-foreground max-w-xl mx-auto">
                 All Axiom volunteer work counts toward verified service hours — documented, signed, and ready for school or college applications.
               </p>
-              <Link to="/contact" className="relative mt-7 inline-flex items-center gap-2 rounded-full bg-white text-background px-6 py-3 text-sm font-medium hover:scale-[1.03] transition">
+              <Link to="/contact" className="relative mt-7 inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-6 py-3 text-sm font-medium hover:scale-[1.03] transition">
                 Apply to volunteer <ArrowUpRight size={16} />
               </Link>
             </div>

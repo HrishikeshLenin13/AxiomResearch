@@ -41,12 +41,12 @@ function ResearchPage() {
         sub="Every paper here was written by a high school student in the Axiom network, reviewed by trained peers, and published for the world to read — free, forever."
       />
 
-      <section className="relative pb-32 px-6">
+      <section className="relative pb-28 md:pb-32 px-6">
         <div className="mx-auto max-w-6xl">
           <Reveal>
-            <div className="glass-strong rounded-3xl p-5 md:p-6 mb-8">
+            <div className="glass-strong rounded-3xl p-6 md:p-7 mb-8">
               <div className="flex flex-col md:flex-row gap-3">
-                <div className="flex-1 flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-4">
+                <div className="flex-1 flex items-center gap-3 bg-white/40 border border-border rounded-2xl px-4">
                   <Search size={16} className="text-muted-foreground" />
                   <input
                     value={q} onChange={(e) => setQ(e.target.value)}
@@ -60,7 +60,7 @@ function ResearchPage() {
                     <button
                       key={fld} onClick={() => setF(fld)}
                       className={`shrink-0 text-xs rounded-full px-3 py-1.5 border transition ${
-                        f === fld ? "bg-white text-background border-white" : "bg-white/5 border-white/10 text-muted-foreground hover:text-foreground"
+                        f === fld ? "bg-primary text-primary-foreground border-primary" : "bg-white/5 border-white/10 text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       {fld}
@@ -74,7 +74,7 @@ function ResearchPage() {
           <div className="grid md:grid-cols-2 gap-4">
             {list.map((p, i) => (
               <Reveal key={p.title} delay={i * 0.04}>
-                <motion.a href="#" whileHover={{ y: -4 }} className="block glass rounded-3xl p-6 h-full group">
+                <motion.a href="#" whileHover={{ y: -4 }} className="block glass rounded-3xl p-6 md:p-7 h-full group">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xs rounded-full bg-violet/20 border border-violet/30 px-3 py-1 text-cyan-glow">{p.field}</span>
                     <span className="text-xs text-muted-foreground">{p.year}</span>
