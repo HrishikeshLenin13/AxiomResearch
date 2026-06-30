@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageHero } from "../components/PageShell";
+import { CmsPageHero } from "../components/CmsPageHero";
 import { Reveal } from "../components/Reveal";
 import { motion } from "framer-motion";
 import { ArrowUpRight, MapPin, Clock } from "lucide-react";
@@ -28,10 +28,12 @@ const roles = [
 function CareersPage() {
   return (
     <>
-      <PageHero
+      <CmsPageHero
+        pageKey="careers"
         eyebrow="Careers & internships"
-        title={<>Help us build <span className="text-gradient-brand">what didn't exist.</span></>}
-        sub="We're a student-led team building practical research programs. Each role offers meaningful work, ownership, and volunteer hours."
+        fallbackTitle={<>Help us build <span className="text-gradient-brand">what didn't exist.</span></>}
+        fallbackTitleText="Help us build what didn't exist."
+        fallbackSub="We're a student-led team building practical research programs. Each role offers meaningful work, ownership, and volunteer hours."
       />
       <section className="relative pb-28 md:pb-32 px-6">
         <div className="mx-auto max-w-5xl space-y-3">

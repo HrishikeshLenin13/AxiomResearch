@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageHero } from "../components/PageShell";
+import { CmsPageHero } from "../components/CmsPageHero";
 import { Reveal } from "../components/Reveal";
 import { motion } from "framer-motion";
 import { BookOpen, Microscope, Users, Database, ArrowRight } from "lucide-react";
@@ -60,10 +60,12 @@ const programs = [
 function ProgramsPage() {
   return (
     <>
-      <PageHero
+      <CmsPageHero
+        pageKey="programs"
         eyebrow="Programs"
-        title={<>Four pathways into <span className="text-gradient-brand">real research.</span></>}
-        sub="Whether you're brand new to research or ready to publish, there's a program that meets you where you are — and pushes you forward."
+        fallbackTitle={<>Four pathways into <span className="text-gradient-brand">real research.</span></>}
+        fallbackTitleText="Four pathways into real research."
+        fallbackSub="Whether you're brand new to research or ready to publish, there's a program that meets you where you are — and pushes you forward."
       />
       <section className="relative pb-28 md:pb-32 px-6">
         <div className="mx-auto max-w-6xl space-y-6">

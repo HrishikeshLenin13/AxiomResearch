@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageHero } from "../components/PageShell";
+import { CmsPageHero } from "../components/CmsPageHero";
 import { Reveal } from "../components/Reveal";
 import { Target, Eye, Users, Rocket } from "lucide-react";
 
@@ -23,10 +23,12 @@ function AboutPage() {
 
   return (
     <>
-      <PageHero
+      <CmsPageHero
+        pageKey="about"
         eyebrow="About Axiom"
-        title={<>Built by students. <span className="text-gradient-brand">For students.</span></>}
-        sub="Axiom started with a simple question: why does serious research feel out of reach to most high schoolers? We're the answer we wish we'd had."
+        fallbackTitle={<>Built by students. <span className="text-gradient-brand">For students.</span></>}
+        fallbackTitleText="Built by students. For students."
+        fallbackSub="Axiom started with a simple question: why does serious research feel out of reach to most high schoolers? We're the answer we wish we'd had."
       />
 
       <section className="relative pb-16 md:pb-20 px-6">

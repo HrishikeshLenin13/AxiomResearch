@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { PageHero } from "../components/PageShell";
+import { CmsPageHero } from "../components/CmsPageHero";
 import { Reveal } from "../components/Reveal";
 import { Mail, MapPin, Sparkles, ExternalLink } from "lucide-react";
 
@@ -17,10 +17,12 @@ export const Route = createFileRoute("/contact")({
 function ContactPage() {
   return (
     <>
-      <PageHero
+      <CmsPageHero
+        pageKey="contact"
         eyebrow="Contact"
-        title={<>Let's <span className="text-gradient-brand">talk.</span></>}
-        sub="Partnerships, press, volunteer interest, or general questions — send us a note and the team will follow up."
+        fallbackTitle={<>Let's <span className="text-gradient-brand">talk.</span></>}
+        fallbackTitleText="Let's talk."
+        fallbackSub="Partnerships, press, volunteer interest, or general questions — send us a note and the team will follow up."
       />
       <section className="relative pb-28 md:pb-32 px-6">
         <div className="mx-auto max-w-6xl grid lg:grid-cols-5 gap-8">

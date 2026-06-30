@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { ParticleField } from "../components/ParticleField";
 import { Reveal } from "../components/Reveal";
+import { useWebsitePageContent } from "../hooks/useWebsitePageContent";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -39,6 +40,10 @@ function Hero() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const cms = useWebsitePageContent("home", {
+    title: "Empowering the next generation of researchers.",
+    sub: "A nonprofit initiative helping high school students learn research methods, collaborate with peers, and share thoughtful academic work.",
+  });
 
   return (
     <section ref={ref} className="relative min-h-[100vh] flex items-center justify-center overflow-hidden pt-24">
@@ -68,9 +73,15 @@ function Hero() {
           transition={{ duration: 0.9, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
           className="mt-7 text-5xl sm:text-6xl md:text-8xl font-semibold leading-[1.02] tracking-tight"
         >
-          <span className="text-gradient">Empowering the next</span>
-          <br />
-          <span className="text-gradient-brand">generation of researchers.</span>
+          {cms.hasCustomTitle ? (
+            <span className="text-gradient">{cms.title}</span>
+          ) : (
+            <>
+              <span className="text-gradient">Empowering the next</span>
+              <br />
+              <span className="text-gradient-brand">generation of researchers.</span>
+            </>
+          )}
         </motion.h1>
 
         <motion.p
@@ -79,7 +90,7 @@ function Hero() {
           transition={{ duration: 0.8, delay: 0.3 }}
           className="mt-7 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
         >
-          A nonprofit initiative helping high school students learn research methods, collaborate with peers, and share thoughtful academic work.
+          {cms.sub}
         </motion.p>
 
         <motion.div

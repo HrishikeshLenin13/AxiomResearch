@@ -60,10 +60,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootComponent() {
   const loc = useLocation();
-  const isAdmin = loc.pathname === "/admin";
+  const hidePublicChrome =
+    loc.pathname === "/admin" ||
+    loc.pathname === "/login" ||
+    loc.pathname.startsWith("/learn");
   return (
     <div className="relative min-h-screen bg-background text-foreground antialiased">
-      {!isAdmin && <Navbar />}
+      {!hidePublicChrome && <Navbar />}
       <AnimatePresence mode="wait">
         <motion.main
           key={loc.pathname}
@@ -75,7 +78,7 @@ function RootComponent() {
           <Outlet />
         </motion.main>
       </AnimatePresence>
-      {!isAdmin && <Footer />}
+      {!hidePublicChrome && <Footer />}
     </div>
   );
 }

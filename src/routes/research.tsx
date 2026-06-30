@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageHero } from "../components/PageShell";
+import { CmsPageHero } from "../components/CmsPageHero";
 import { Reveal } from "../components/Reveal";
 import { FileText } from "lucide-react";
 
@@ -16,10 +16,12 @@ export const Route = createFileRoute("/research")({
 function ResearchPage() {
   return (
     <>
-      <PageHero
+      <CmsPageHero
+        pageKey="research"
         eyebrow="Research database"
-        title={<>An open archive of <span className="text-gradient-brand">student work.</span></>}
-        sub="The research archive will open once reviewed student papers are ready for publication."
+        fallbackTitle={<>An open archive of <span className="text-gradient-brand">student work.</span></>}
+        fallbackTitleText="An open archive of student work."
+        fallbackSub="The research archive will open once reviewed student papers are ready for publication."
       />
 
       <section className="relative pb-28 md:pb-32 px-6">

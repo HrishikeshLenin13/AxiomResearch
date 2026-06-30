@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageHero } from "../components/PageShell";
+import { CmsPageHero } from "../components/CmsPageHero";
 import { Reveal } from "../components/Reveal";
 import { motion } from "framer-motion";
 import { Heart, FileText, Users, Award, ArrowUpRight } from "lucide-react";
@@ -24,10 +24,12 @@ const roles = [
 function VolunteerPage() {
   return (
     <>
-      <PageHero
+      <CmsPageHero
+        pageKey="volunteer"
         eyebrow="Volunteer"
-        title={<>Give time. <span className="text-gradient-brand">Build the network.</span></>}
-        sub="Axiom runs entirely on student volunteers. Whatever you bring — reviewing, mentoring, organizing, building — there's a role that needs you."
+        fallbackTitle={<>Give time. <span className="text-gradient-brand">Build the network.</span></>}
+        fallbackTitleText="Give time. Build the network."
+        fallbackSub="Axiom runs entirely on student volunteers. Whatever you bring — reviewing, mentoring, organizing, building — there's a role that needs you."
       />
       <section className="relative pb-28 md:pb-32 px-6">
         <div className="mx-auto max-w-6xl">

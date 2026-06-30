@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { PageHero } from "../components/PageShell";
+import { CmsPageHero } from "../components/CmsPageHero";
 import { Reveal } from "../components/Reveal";
 
 export const Route = createFileRoute("/faq")({
@@ -43,10 +43,12 @@ const groups = [
 function FaqPage() {
   return (
     <>
-      <PageHero
+      <CmsPageHero
+        pageKey="faq"
         eyebrow="FAQ"
-        title={<>Everything you need <span className="text-gradient-brand">to know.</span></>}
-        sub="Still curious? Reach out — we read every message."
+        fallbackTitle={<>Everything you need <span className="text-gradient-brand">to know.</span></>}
+        fallbackTitleText="Everything you need to know."
+        fallbackSub="Still curious? Reach out — we read every message."
       />
       <section className="relative pb-28 md:pb-32 px-6">
         <div className="mx-auto max-w-3xl space-y-12">
