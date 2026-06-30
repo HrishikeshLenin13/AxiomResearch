@@ -25,7 +25,7 @@ export function CourseSignInPanel({ onSuccess }: CourseSignInPanelProps) {
     setSubmitting(true);
     try {
       if (!configured) {
-        setError("Firebase is not configured yet. Add your VITE_FIREBASE_* keys.");
+        setError("Firebase is not configured. Add all VITE_FIREBASE_* variables in Vercel, then redeploy (env vars only apply after a new build).");
         return;
       }
       await signInWithGoogle();
@@ -43,7 +43,7 @@ export function CourseSignInPanel({ onSuccess }: CourseSignInPanelProps) {
     setSubmitting(true);
     try {
       if (!configured) {
-        setError("Firebase is not configured yet. Add your VITE_FIREBASE_* keys.");
+        setError("Firebase is not configured. Add all VITE_FIREBASE_* variables in Vercel, then redeploy (env vars only apply after a new build).");
         return;
       }
       if (password.length < 6) {
