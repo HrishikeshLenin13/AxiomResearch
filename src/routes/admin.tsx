@@ -8,12 +8,11 @@ import { MembersSection } from "../components/admin/MembersSection";
 import { NavigationEditorSection } from "../components/admin/NavigationEditorSection";
 import { VersionHistorySection } from "../components/admin/VersionHistorySection";
 import { WebsiteEditorSection } from "../components/admin/WebsiteEditorSection";
-import { getAuthState, isAdminProfile, signOut } from "../lib/auth";
+import { isAdminSessionActive, signOutAdmin } from "../lib/admin-session";
 
 export const Route = createFileRoute("/admin")({
-  beforeLoad: async () => {
-    const auth = await getAuthState();
-    if (!auth.session || !isAdminProfile(auth.profile)) {
+  beforeLoad: () => {
+    if (!isAdminSessionActive()) {
       throw redirect({ to: "/login", search: { redirect: "/admin" } });
     }
   },
@@ -29,8 +28,8 @@ export const Route = createFileRoute("/admin")({
 function AdminPage() {
   const navigate = useNavigate();
 
-  async function handleLogout() {
-    await signOut();
+  function handleLogout() {
+    signOutAdmin();
     navigate({ to: "/login" });
   }
 

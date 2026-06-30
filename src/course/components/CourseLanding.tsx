@@ -1,38 +1,15 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import { useState } from "react";
 import {
   COURSE_ESTIMATED_LABEL,
   COURSE_MODULES,
   PASSING_SCORE,
 } from "../data/modules";
-import { useCourse } from "../context/CourseProvider";
 import { CourseHeader } from "./CourseHeader";
+import { CourseSignInPanel } from "./CourseSignInPanel";
 import { TypewriterPaper } from "./TypewriterPaper";
 
 export function CourseLanding() {
-  const navigate = useNavigate();
-  const { configured, signInWithGoogle } = useCourse();
-  const [error, setError] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-
-  async function handleGoogleSignIn() {
-    setError("");
-    setSubmitting(true);
-    try {
-      if (!configured) {
-        setError("Firebase is not configured yet. Add your VITE_FIREBASE_* keys to .env.");
-        return;
-      }
-      await signInWithGoogle();
-      navigate({ to: "/learn/dashboard" });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Google sign in failed.");
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
   return (
     <div className="min-h-screen">
       <CourseHeader user={null} showCourseBadge={false} />
@@ -55,39 +32,26 @@ export function CourseLanding() {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <button
-                type="button"
-                disabled={submitting}
-                onClick={() => void handleGoogleSignIn()}
-                className="course-btn-primary disabled:opacity-60"
-              >
+              <a href="#sign-in" className="course-btn-primary">
                 Begin the course
                 <ArrowRight size={16} />
-              </button>
+              </a>
               <a href="#syllabus" className="course-btn-secondary">
                 View curriculum
               </a>
             </div>
 
-            <button
-              type="button"
-              disabled={submitting}
-              onClick={() => void handleGoogleSignIn()}
-              className="course-btn-google mt-4"
-            >
-              <GoogleMark />
-              Sign in with Google
-            </button>
-
-            {error ? <p className="mt-4 text-sm text-red-700">{error}</p> : null}
-
             <p className="mt-5 text-sm text-[var(--course-ink-soft)] max-w-lg">
-              Sign in with Google so we can track your time and quiz scores automatically. Pass each
-              quiz with {Math.round(PASSING_SCORE * 100)}% or higher to unlock the next section.
+              Sign in with Google or email so we can track your time and quiz scores. Pass each quiz
+              with {Math.round(PASSING_SCORE * 100)}% or higher to unlock the next section.
             </p>
           </div>
 
           <TypewriterPaper />
+        </section>
+
+        <section id="sign-in">
+          <CourseSignInPanel />
         </section>
 
         <section className="mt-16 grid md:grid-cols-3 gap-5">
@@ -138,33 +102,20 @@ export function CourseLanding() {
           </div>
 
           <div className="mt-10 flex justify-center">
-            <button
-              type="button"
-              disabled={submitting}
-              onClick={() => void handleGoogleSignIn()}
-              className="course-btn-primary disabled:opacity-60"
-            >
+            <a href="#sign-in" className="course-btn-primary">
               Sign in and start
               <ArrowRight size={16} />
-            </button>
+            </a>
           </div>
         </section>
 
         <footer className="mt-20 pt-8 border-t border-[var(--course-line)] text-center text-sm text-[var(--course-ink-soft)]">
-          © {new Date().getFullYear()} Axiom Research Initiative
+          © {new Date().getFullYear()} Axiom Research Initiative ·{" "}
+          <Link to="/" className="underline underline-offset-2 hover:text-[var(--course-ink)]">
+            Return to website
+          </Link>
         </footer>
       </main>
     </div>
-  );
-}
-
-function GoogleMark() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
-      <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303C33.654 32.657 29.203 36 24 36c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C33.64 6.053 29.082 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z" />
-      <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C33.64 6.053 29.082 4 24 4 16.318 4 9.656 8.337 6.306 14.691z" />
-      <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z" />
-      <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z" />
-    </svg>
   );
 }

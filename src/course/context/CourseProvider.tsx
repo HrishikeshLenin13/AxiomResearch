@@ -10,7 +10,9 @@ import {
 } from "react";
 import {
   GoogleAuthProvider,
+  createUserWithEmailAndPassword,
   onAuthStateChanged,
+  signInWithEmailAndPassword,
   signInWithPopup,
   signOut as firebaseSignOut,
   type User,
@@ -33,6 +35,8 @@ type CourseContextValue = {
   progress: CourseProgressDoc | null;
   activeTimerMs: number;
   signInWithGoogle: () => Promise<void>;
+  signInWithEmail: (email: string, password: string) => Promise<void>;
+  signUpWithEmail: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   resetTimer: () => Promise<void>;
   resetCourseProgress: () => Promise<void>;
@@ -159,6 +163,18 @@ export function CourseProvider({ children }: { children: ReactNode }) {
     await signInWithPopup(auth, provider);
   }, []);
 
+  const signInWithEmail = useCallback(async (email: string, password: string) => {
+    const auth = getFirebaseAuth();
+    if (!auth) throw new Error("Firebase is not configured.");
+    await signInWithEmailAndPassword(auth, email.trim(), password);
+  }, []);
+
+  const signUpWithEmail = useCallback(async (email: string, password: string) => {
+    const auth = getFirebaseAuth();
+    if (!auth) throw new Error("Firebase is not configured.");
+    await createUserWithEmailAndPassword(auth, email.trim(), password);
+  }, []);
+
   const pauseTimerSession = useCallback(async () => {
     if (!progress || !progress.timerSessionStartedAt) return;
     const next: CourseProgressDoc = {
@@ -258,6 +274,8 @@ export function CourseProvider({ children }: { children: ReactNode }) {
       progress,
       activeTimerMs,
       signInWithGoogle,
+      signInWithEmail,
+      signUpWithEmail,
       signOut,
       resetTimer,
       resetCourseProgress,
@@ -270,6 +288,8 @@ export function CourseProvider({ children }: { children: ReactNode }) {
       progress,
       activeTimerMs,
       signInWithGoogle,
+      signInWithEmail,
+      signUpWithEmail,
       signOut,
       resetTimer,
       resetCourseProgress,
