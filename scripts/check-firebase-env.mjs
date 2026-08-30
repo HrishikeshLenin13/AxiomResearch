@@ -10,11 +10,9 @@ const required = [
 if (process.env.VERCEL || process.env.CI) {
   const missing = required.filter((key) => !process.env[key]?.trim());
   if (missing.length > 0) {
-    console.error("\n❌ Firebase env vars missing for this Vercel build:\n");
-    for (const key of missing) console.error(`   - ${key}`);
-    console.error("\nAdd them in Vercel → Settings → Environment Variables");
-    console.error("Enable Production + Preview + Development, then redeploy.\n");
-    process.exit(1);
+    console.warn("Firebase env vars missing. Course preview will run without login.");
+    for (const key of missing) console.warn(`   - ${key}`);
+  } else {
+    console.log("✓ Firebase env vars present for build");
   }
-  console.log("✓ Firebase env vars present for build");
 }

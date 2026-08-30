@@ -1,12 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import {
-  COURSE_ESTIMATED_LABEL,
-  COURSE_MODULES,
-  PASSING_SCORE,
-} from "../data/modules";
+import { COURSE_ESTIMATED_LABEL, COURSE_MODULES } from "../data/modules";
 import { CourseHeader } from "./CourseHeader";
-import { CourseSignInPanel } from "./CourseSignInPanel";
 import { TypewriterPaper } from "./TypewriterPaper";
 
 export function CourseLanding() {
@@ -26,47 +21,42 @@ export function CourseLanding() {
               <em className="text-[var(--course-accent-deep)] not-italic">that actually counts.</em>
             </h1>
             <p className="mt-5 text-lg text-[var(--course-ink-soft)] leading-relaxed max-w-xl">
-              This course teaches you how to move from a rough idea to a defensible paper. You will
-              practice finding real sources, reading studies, designing methods, analyzing data, and
-              writing clearly. Volunteers use this training before joining Axiom research projects.
+              This course teaches you how to move from a rough idea to a defensible paper. Pass each
+              multiple-choice quiz to unlock the next unit, then submit the course with a final exam.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <a href="#sign-in" className="course-btn-primary">
+              <Link to="/learn/dashboard" className="course-btn-primary">
                 Begin the course
                 <ArrowRight size={16} />
-              </a>
+              </Link>
               <a href="#syllabus" className="course-btn-secondary">
                 View curriculum
               </a>
             </div>
 
             <p className="mt-5 text-sm text-[var(--course-ink-soft)] max-w-lg">
-              Sign in with Google or email so we can track your time and quiz scores. Pass each quiz
-              with {Math.round(PASSING_SCORE * 100)}% or higher to unlock the next section.
+              Units stay locked until you pass the previous quiz with 80%. Retakes are allowed, with
+              a recorded-score cap of 80% after the first attempt.
             </p>
           </div>
 
           <TypewriterPaper />
         </section>
 
-        <section id="sign-in">
-          <CourseSignInPanel />
-        </section>
-
         <section className="mt-16 grid md:grid-cols-3 gap-5">
           {[
-            {
-              title: "Required for volunteers",
-              body: "Complete every section before being assigned to a research project.",
-            },
             {
               title: "From question to paper",
               body: "Methods, statistics, and writing taught the way working researchers practice them.",
             },
             {
-              title: "Mastery gated",
-              body: `Each quiz unlocks only after you pass the previous one with ${Math.round(PASSING_SCORE * 100)}% or higher.`,
+              title: "Full lessons, not outlines",
+              body: "Each unit includes a full lesson, key terms, and a timed multiple-choice quiz.",
+            },
+            {
+              title: "Built for students",
+              body: `Plan about ${COURSE_ESTIMATED_LABEL}. Work at your own pace, unit by unit.`,
             },
           ].map((item) => (
             <div key={item.title} className="course-card p-5">
@@ -83,8 +73,7 @@ export function CourseLanding() {
             Eight units. One coherent training.
           </h2>
           <p className="text-[var(--course-ink-soft)] mt-3 max-w-2xl">
-            Built for high school students with no prior research experience. Plan about{" "}
-            {COURSE_ESTIMATED_LABEL} total including quizzes and short activities.
+            Built for high school students with no prior research experience.
           </p>
 
           <div className="mt-8 space-y-3">
@@ -102,19 +91,12 @@ export function CourseLanding() {
           </div>
 
           <div className="mt-10 flex justify-center">
-            <a href="#sign-in" className="course-btn-primary">
-              Sign in and start
+            <Link to="/learn/dashboard" className="course-btn-primary">
+              Open the dashboard
               <ArrowRight size={16} />
-            </a>
+            </Link>
           </div>
         </section>
-
-        <footer className="mt-20 pt-8 border-t border-[var(--course-line)] text-center text-sm text-[var(--course-ink-soft)]">
-          © {new Date().getFullYear()} Axiom Research Initiative ·{" "}
-          <Link to="/" className="underline underline-offset-2 hover:text-[var(--course-ink)]">
-            Return to website
-          </Link>
-        </footer>
       </main>
     </div>
   );

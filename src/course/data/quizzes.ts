@@ -145,9 +145,43 @@ export const MODULE_QUIZZES: ModuleQuiz[] = [
 ];
 
 /** Five questions per module keeps total quiz time ~45–60 min for the full course. */
-export const QUIZ_QUESTIONS_PER_MODULE = 5;
+export const QUIZ_QUESTIONS_PER_MODULE = 10;
+
+export const FINAL_QUIZ_BRIEFING = [
+  "This final covers all eight units. Only multiple-choice questions are graded.",
+  "You need 80% to complete the course. The grade appears as soon as you submit.",
+  "A retake after your first attempt is capped at 80%.",
+  "Leaving or closing the tab can delete this attempt.",
+];
+
+export const FINAL_QUIZ: ModuleQuiz = {
+  moduleId: "final",
+  questions: [
+    q("f-q1", "Research is best described as:", ["Looking up facts until you confirm what you already believe", "A systematic process for answering unanswered questions with evidence", "Collecting as many websites as possible", "Copying expert opinions without checking methods"], 1, "Research is structured, evidence-based inquiry."),
+    q("f-q2", "The main difference between Googling and research is that research:", ["Never uses the internet", "Evaluates source quality, methods, and limits", "Is always faster", "Requires a university lab"], 1, "Research adds evaluation that search ranking does not."),
+    q("f-q3", "A primary source is:", ["A textbook summary of many studies", "Original data or firsthand findings", "An encyclopedia entry", "A news headline"], 1, "Primary sources present original evidence."),
+    q("f-q4", "Peer review means:", ["Authors privately check their own draft", "Independent experts evaluate a manuscript before publication", "Students grade each other", "AI auto-approves the paper"], 1, "External expert review is the quality filter."),
+    q("f-q5", "Predatory journals often:", ["Have strict review and never charge fees", "Charge fees with weak or fake review", "Only publish Nobel-level work", "Are the same as PubMed"], 1, "They exploit pay-to-publish with little scrutiny."),
+    q("f-q6", "When reading a paper, a strong first pass usually includes:", ["Every appendix word", "Abstract, figures, and headings", "Only the author bios", "The acknowledgements"], 1, "Skim structure before deep reading."),
+    q("f-q7", "Statistical significance does not automatically mean:", ["A p-value was calculated", "The finding is practically important", "A sample existed", "Results were reported"], 1, "Significance is not the same as importance."),
+    q("f-q8", "A topic is too broad when:", ["It names a population and a variable", "It cannot be studied with your time and resources", "It uses Google Scholar", "It includes a methods plan"], 1, "Scope must match feasibility."),
+    q("f-q9", "A research gap is:", ["A missing citation format", "An unanswered or under-studied question", "A journal paywall", "A failed quiz"], 1, "Gaps motivate new work."),
+    q("f-q10", "Randomization in experiments mainly helps:", ["Increase sample size to one", "Balance confounders across groups", "Remove the need for ethics review", "Prove a hypothesis before data"], 1, "Random assignment supports fair comparison."),
+    q("f-q11", "An IRB primarily protects:", ["Journal rankings", "Rights and welfare of human participants", "Only animal studies", "Slide design"], 1, "IRBs oversee human subjects research."),
+    q("f-q12", "Correlation means:", ["One variable caused the other", "Two variables are associated", "The study was an experiment", "The p-value is zero"], 1, "Association is not causation."),
+    q("f-q13", "The median is:", ["The most frequent value", "The middle value when data are ordered", "Always equal to the mean", "The largest outlier"], 1, "Median splits ordered data."),
+    q("f-q14", "A p-value is closest to:", ["The probability the null hypothesis is true", "How surprising the data would be if the null were true", "Proof the effect is large", "Sample size"], 1, "P-values measure surprise under the null."),
+    q("f-q15", "Scientific writing should:", ["Hype findings and hide limits", "Stay precise, objective, and matched to the data", "Avoid citations", "Put interpretation in the results tables only"], 1, "Tone and claims must match evidence."),
+    q("f-q16", "The discussion section should:", ["Introduce brand-new unreported data", "Interpret results, compare to prior work, and note limitations", "Repeat the abstract word for word", "List raw spreadsheets"], 1, "Discussion interprets; it does not hide new results."),
+    q("f-q17", "An AI hallucination is:", ["A hardware crash", "A fluent but false generated claim or citation", "A peer-review delay", "An open-access fee"], 1, "Models can invent plausible falsehoods."),
+    q("f-q18", "After an AI tool lists papers, you should:", ["Cite the chatbot as the source", "Open and verify the original papers", "Skip methods sections", "Assume every DOI is real"], 1, "Always verify against primary sources."),
+    q("f-q19", "Citation chaining is:", ["Deleting a bibliography", "Following references backward and \"cited by\" forward from a key paper", "Using only one database", "Copying citations without reading"], 1, "It grows a trustworthy literature map."),
+    q("f-q20", "A strong research question is:", ["Vague and unmeasurable", "Specific, testable, and feasible", "The same as a broad topic like \"AI\"", "Unrelated to prior literature"], 1, "Precision makes a question investigable."),
+  ],
+};
 
 export function getQuizByModuleId(moduleId: string) {
+  if (moduleId === "final") return FINAL_QUIZ;
   const quiz = MODULE_QUIZZES.find((entry) => entry.moduleId === moduleId);
   if (!quiz) return undefined;
   return {

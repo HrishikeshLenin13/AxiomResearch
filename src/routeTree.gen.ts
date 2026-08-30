@@ -25,9 +25,11 @@ import { Route as LearnRouteRouteImport } from './routes/learn/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LearnIndexRouteImport } from './routes/learn/index'
 import { Route as LearnLoginRouteImport } from './routes/learn/login'
+import { Route as LearnFinalRouteImport } from './routes/learn/final'
 import { Route as LearnDashboardRouteImport } from './routes/learn/dashboard'
 import { Route as LearnModulesRouteRouteImport } from './routes/learn/modules/route'
-import { Route as LearnModulesModuleIdRouteImport } from './routes/learn/modules/$moduleId'
+import { Route as LearnModulesModuleIdRouteRouteImport } from './routes/learn/modules/$moduleId/route'
+import { Route as LearnModulesModuleIdIndexRouteImport } from './routes/learn/modules/$moduleId/index'
 import { Route as LearnModulesModuleIdQuizRouteImport } from './routes/learn/modules/$moduleId/quiz'
 
 const VolunteerRoute = VolunteerRouteImport.update({
@@ -110,6 +112,11 @@ const LearnLoginRoute = LearnLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => LearnRouteRoute,
 } as any)
+const LearnFinalRoute = LearnFinalRouteImport.update({
+  id: '/final',
+  path: '/final',
+  getParentRoute: () => LearnRouteRoute,
+} as any)
 const LearnDashboardRoute = LearnDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -120,16 +127,23 @@ const LearnModulesRouteRoute = LearnModulesRouteRouteImport.update({
   path: '/modules',
   getParentRoute: () => LearnRouteRoute,
 } as any)
-const LearnModulesModuleIdRoute = LearnModulesModuleIdRouteImport.update({
-  id: '/$moduleId',
-  path: '/$moduleId',
-  getParentRoute: () => LearnModulesRouteRoute,
-} as any)
+const LearnModulesModuleIdRouteRoute =
+  LearnModulesModuleIdRouteRouteImport.update({
+    id: '/$moduleId',
+    path: '/$moduleId',
+    getParentRoute: () => LearnModulesRouteRoute,
+  } as any)
+const LearnModulesModuleIdIndexRoute =
+  LearnModulesModuleIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => LearnModulesModuleIdRouteRoute,
+  } as any)
 const LearnModulesModuleIdQuizRoute =
   LearnModulesModuleIdQuizRouteImport.update({
     id: '/quiz',
     path: '/quiz',
-    getParentRoute: () => LearnModulesModuleIdRoute,
+    getParentRoute: () => LearnModulesModuleIdRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -149,10 +163,12 @@ export interface FileRoutesByFullPath {
   '/volunteer': typeof VolunteerRoute
   '/learn/modules': typeof LearnModulesRouteRouteWithChildren
   '/learn/dashboard': typeof LearnDashboardRoute
+  '/learn/final': typeof LearnFinalRoute
   '/learn/login': typeof LearnLoginRoute
   '/learn/': typeof LearnIndexRoute
-  '/learn/modules/$moduleId': typeof LearnModulesModuleIdRouteWithChildren
+  '/learn/modules/$moduleId': typeof LearnModulesModuleIdRouteRouteWithChildren
   '/learn/modules/$moduleId/quiz': typeof LearnModulesModuleIdQuizRoute
+  '/learn/modules/$moduleId/': typeof LearnModulesModuleIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -170,10 +186,11 @@ export interface FileRoutesByTo {
   '/volunteer': typeof VolunteerRoute
   '/learn/modules': typeof LearnModulesRouteRouteWithChildren
   '/learn/dashboard': typeof LearnDashboardRoute
+  '/learn/final': typeof LearnFinalRoute
   '/learn/login': typeof LearnLoginRoute
   '/learn': typeof LearnIndexRoute
-  '/learn/modules/$moduleId': typeof LearnModulesModuleIdRouteWithChildren
   '/learn/modules/$moduleId/quiz': typeof LearnModulesModuleIdQuizRoute
+  '/learn/modules/$moduleId': typeof LearnModulesModuleIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -193,10 +210,12 @@ export interface FileRoutesById {
   '/volunteer': typeof VolunteerRoute
   '/learn/modules': typeof LearnModulesRouteRouteWithChildren
   '/learn/dashboard': typeof LearnDashboardRoute
+  '/learn/final': typeof LearnFinalRoute
   '/learn/login': typeof LearnLoginRoute
   '/learn/': typeof LearnIndexRoute
-  '/learn/modules/$moduleId': typeof LearnModulesModuleIdRouteWithChildren
+  '/learn/modules/$moduleId': typeof LearnModulesModuleIdRouteRouteWithChildren
   '/learn/modules/$moduleId/quiz': typeof LearnModulesModuleIdQuizRoute
+  '/learn/modules/$moduleId/': typeof LearnModulesModuleIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -217,10 +236,12 @@ export interface FileRouteTypes {
     | '/volunteer'
     | '/learn/modules'
     | '/learn/dashboard'
+    | '/learn/final'
     | '/learn/login'
     | '/learn/'
     | '/learn/modules/$moduleId'
     | '/learn/modules/$moduleId/quiz'
+    | '/learn/modules/$moduleId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -238,10 +259,11 @@ export interface FileRouteTypes {
     | '/volunteer'
     | '/learn/modules'
     | '/learn/dashboard'
+    | '/learn/final'
     | '/learn/login'
     | '/learn'
-    | '/learn/modules/$moduleId'
     | '/learn/modules/$moduleId/quiz'
+    | '/learn/modules/$moduleId'
   id:
     | '__root__'
     | '/'
@@ -260,10 +282,12 @@ export interface FileRouteTypes {
     | '/volunteer'
     | '/learn/modules'
     | '/learn/dashboard'
+    | '/learn/final'
     | '/learn/login'
     | '/learn/'
     | '/learn/modules/$moduleId'
     | '/learn/modules/$moduleId/quiz'
+    | '/learn/modules/$moduleId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -397,6 +421,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LearnLoginRouteImport
       parentRoute: typeof LearnRouteRoute
     }
+    '/learn/final': {
+      id: '/learn/final'
+      path: '/final'
+      fullPath: '/learn/final'
+      preLoaderRoute: typeof LearnFinalRouteImport
+      parentRoute: typeof LearnRouteRoute
+    }
     '/learn/dashboard': {
       id: '/learn/dashboard'
       path: '/dashboard'
@@ -415,36 +446,48 @@ declare module '@tanstack/react-router' {
       id: '/learn/modules/$moduleId'
       path: '/$moduleId'
       fullPath: '/learn/modules/$moduleId'
-      preLoaderRoute: typeof LearnModulesModuleIdRouteImport
+      preLoaderRoute: typeof LearnModulesModuleIdRouteRouteImport
       parentRoute: typeof LearnModulesRouteRoute
+    }
+    '/learn/modules/$moduleId/': {
+      id: '/learn/modules/$moduleId/'
+      path: '/'
+      fullPath: '/learn/modules/$moduleId/'
+      preLoaderRoute: typeof LearnModulesModuleIdIndexRouteImport
+      parentRoute: typeof LearnModulesModuleIdRouteRoute
     }
     '/learn/modules/$moduleId/quiz': {
       id: '/learn/modules/$moduleId/quiz'
       path: '/quiz'
       fullPath: '/learn/modules/$moduleId/quiz'
       preLoaderRoute: typeof LearnModulesModuleIdQuizRouteImport
-      parentRoute: typeof LearnModulesModuleIdRoute
+      parentRoute: typeof LearnModulesModuleIdRouteRoute
     }
   }
 }
 
-interface LearnModulesModuleIdRouteChildren {
+interface LearnModulesModuleIdRouteRouteChildren {
   LearnModulesModuleIdQuizRoute: typeof LearnModulesModuleIdQuizRoute
+  LearnModulesModuleIdIndexRoute: typeof LearnModulesModuleIdIndexRoute
 }
 
-const LearnModulesModuleIdRouteChildren: LearnModulesModuleIdRouteChildren = {
-  LearnModulesModuleIdQuizRoute: LearnModulesModuleIdQuizRoute,
-}
+const LearnModulesModuleIdRouteRouteChildren: LearnModulesModuleIdRouteRouteChildren =
+  {
+    LearnModulesModuleIdQuizRoute: LearnModulesModuleIdQuizRoute,
+    LearnModulesModuleIdIndexRoute: LearnModulesModuleIdIndexRoute,
+  }
 
-const LearnModulesModuleIdRouteWithChildren =
-  LearnModulesModuleIdRoute._addFileChildren(LearnModulesModuleIdRouteChildren)
+const LearnModulesModuleIdRouteRouteWithChildren =
+  LearnModulesModuleIdRouteRoute._addFileChildren(
+    LearnModulesModuleIdRouteRouteChildren,
+  )
 
 interface LearnModulesRouteRouteChildren {
-  LearnModulesModuleIdRoute: typeof LearnModulesModuleIdRouteWithChildren
+  LearnModulesModuleIdRouteRoute: typeof LearnModulesModuleIdRouteRouteWithChildren
 }
 
 const LearnModulesRouteRouteChildren: LearnModulesRouteRouteChildren = {
-  LearnModulesModuleIdRoute: LearnModulesModuleIdRouteWithChildren,
+  LearnModulesModuleIdRouteRoute: LearnModulesModuleIdRouteRouteWithChildren,
 }
 
 const LearnModulesRouteRouteWithChildren =
@@ -453,6 +496,7 @@ const LearnModulesRouteRouteWithChildren =
 interface LearnRouteRouteChildren {
   LearnModulesRouteRoute: typeof LearnModulesRouteRouteWithChildren
   LearnDashboardRoute: typeof LearnDashboardRoute
+  LearnFinalRoute: typeof LearnFinalRoute
   LearnLoginRoute: typeof LearnLoginRoute
   LearnIndexRoute: typeof LearnIndexRoute
 }
@@ -460,6 +504,7 @@ interface LearnRouteRouteChildren {
 const LearnRouteRouteChildren: LearnRouteRouteChildren = {
   LearnModulesRouteRoute: LearnModulesRouteRouteWithChildren,
   LearnDashboardRoute: LearnDashboardRoute,
+  LearnFinalRoute: LearnFinalRoute,
   LearnLoginRoute: LearnLoginRoute,
   LearnIndexRoute: LearnIndexRoute,
 }

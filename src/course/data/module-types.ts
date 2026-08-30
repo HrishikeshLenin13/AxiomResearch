@@ -39,6 +39,7 @@ export type CourseModule = {
   id: string;
   number: number;
   title: string;
+  tagline?: string;
   summary: string;
   estimatedMinutes: number;
   learningObjectives: string[];

@@ -21,11 +21,10 @@ export type CourseProgressDoc = {
   timerAccumulatedMs: number;
   timerSessionStartedAt: number | null;
   updatedAt: string;
+  courseSubmitted: boolean;
 };
 
-export const PROGRESS_COLLECTION = "course_progress";
-
-function defaultProgress(email: string): CourseProgressDoc {
+export function emptyCourseProgress(email: string): CourseProgressDoc {
   return {
     email,
     completedModuleIds: [],
@@ -33,7 +32,35 @@ function defaultProgress(email: string): CourseProgressDoc {
     timerAccumulatedMs: 0,
     timerSessionStartedAt: null,
     updatedAt: new Date().toISOString(),
+    courseSubmitted: false,
   };
+}
+
+export function normalizeCourseProgress(
+  email: string,
+  data: Partial<CourseProgressDoc> | null | undefined,
+): CourseProgressDoc {
+  const base = emptyCourseProgress(email);
+  if (!data) return base;
+  return {
+    email: data.email || email,
+    completedModuleIds: Array.isArray(data.completedModuleIds) ? [...data.completedModuleIds] : [],
+    moduleScores:
+      data.moduleScores && typeof data.moduleScores === "object" && !Array.isArray(data.moduleScores)
+        ? { ...data.moduleScores }
+        : {},
+    timerAccumulatedMs: typeof data.timerAccumulatedMs === "number" ? data.timerAccumulatedMs : 0,
+    timerSessionStartedAt:
+      typeof data.timerSessionStartedAt === "number" ? data.timerSessionStartedAt : null,
+    updatedAt: typeof data.updatedAt === "string" ? data.updatedAt : base.updatedAt,
+    courseSubmitted: Boolean(data.courseSubmitted),
+  };
+}
+
+export const PROGRESS_COLLECTION = "course_progress";
+
+function defaultProgress(email: string): CourseProgressDoc {
+  return emptyCourseProgress(email);
 }
 
 function progressDocRef(uid: string) {
@@ -54,33 +81,21 @@ export async function loadCourseProgress(uid: string, email: string) {
   }
 
   const data = snapshot.data() as Partial<CourseProgressDoc>;
-  return {
-    ...defaultProgress(email),
-    ...data,
-    email: data.email ?? email,
-    completedModuleIds: data.completedModuleIds ?? [],
-    moduleScores: data.moduleScores ?? {},
-    timerAccumulatedMs: data.timerAccumulatedMs ?? 0,
-    timerSessionStartedAt: data.timerSessionStartedAt ?? null,
-    updatedAt:
-      typeof data.updatedAt === "string"
-        ? data.updatedAt
-        : (data.updatedAt as Timestamp | undefined)?.toDate?.().toISOString() ??
-          new Date().toISOString(),
-  };
+  const updatedAt =
+    typeof data.updatedAt === "string"
+      ? data.updatedAt
+      : (data.updatedAt as Timestamp | undefined)?.toDate?.().toISOString() ??
+        new Date().toISOString();
+  return normalizeCourseProgress(data.email ?? email, { ...data, updatedAt });
 }
 
 export async function saveCourseProgress(uid: string, progress: CourseProgressDoc) {
   const ref = progressDocRef(uid);
   if (!ref) return;
-  await setDoc(
-    ref,
-    {
-      ...progress,
-      updatedAt: serverTimestamp(),
-    },
-    { merge: true },
-  );
+  await setDoc(ref, {
+    ...progress,
+    updatedAt: serverTimestamp(),
+  });
 }
 
 export function getActiveTimerMs(progress: CourseProgressDoc, now = Date.now()) {
