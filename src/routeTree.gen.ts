@@ -27,7 +27,10 @@ import { Route as LearnIndexRouteImport } from './routes/learn/index'
 import { Route as LearnLoginRouteImport } from './routes/learn/login'
 import { Route as LearnFinalRouteImport } from './routes/learn/final'
 import { Route as LearnDashboardRouteImport } from './routes/learn/dashboard'
+import { Route as AdminVolunteersRouteImport } from './routes/admin.volunteers'
 import { Route as LearnModulesRouteRouteImport } from './routes/learn/modules/route'
+import { Route as AdminVolunteersIdsRouteImport } from './routes/admin.volunteers.ids'
+import { Route as AdminVolunteersCompletedRouteImport } from './routes/admin.volunteers.completed'
 import { Route as LearnModulesModuleIdRouteRouteImport } from './routes/learn/modules/$moduleId/route'
 import { Route as LearnModulesModuleIdIndexRouteImport } from './routes/learn/modules/$moduleId/index'
 import { Route as LearnModulesModuleIdQuizRouteImport } from './routes/learn/modules/$moduleId/quiz'
@@ -122,11 +125,27 @@ const LearnDashboardRoute = LearnDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => LearnRouteRoute,
 } as any)
+const AdminVolunteersRoute = AdminVolunteersRouteImport.update({
+  id: '/volunteers',
+  path: '/volunteers',
+  getParentRoute: () => AdminRoute,
+} as any)
 const LearnModulesRouteRoute = LearnModulesRouteRouteImport.update({
   id: '/modules',
   path: '/modules',
   getParentRoute: () => LearnRouteRoute,
 } as any)
+const AdminVolunteersIdsRoute = AdminVolunteersIdsRouteImport.update({
+  id: '/ids',
+  path: '/ids',
+  getParentRoute: () => AdminVolunteersRoute,
+} as any)
+const AdminVolunteersCompletedRoute =
+  AdminVolunteersCompletedRouteImport.update({
+    id: '/completed',
+    path: '/completed',
+    getParentRoute: () => AdminVolunteersRoute,
+  } as any)
 const LearnModulesModuleIdRouteRoute =
   LearnModulesModuleIdRouteRouteImport.update({
     id: '/$moduleId',
@@ -150,7 +169,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/learn': typeof LearnRouteRouteWithChildren
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/course': typeof CourseRoute
@@ -162,18 +181,21 @@ export interface FileRoutesByFullPath {
   '/research': typeof ResearchRoute
   '/volunteer': typeof VolunteerRoute
   '/learn/modules': typeof LearnModulesRouteRouteWithChildren
+  '/admin/volunteers': typeof AdminVolunteersRouteWithChildren
   '/learn/dashboard': typeof LearnDashboardRoute
   '/learn/final': typeof LearnFinalRoute
   '/learn/login': typeof LearnLoginRoute
   '/learn/': typeof LearnIndexRoute
   '/learn/modules/$moduleId': typeof LearnModulesModuleIdRouteRouteWithChildren
+  '/admin/volunteers/completed': typeof AdminVolunteersCompletedRoute
+  '/admin/volunteers/ids': typeof AdminVolunteersIdsRoute
   '/learn/modules/$moduleId/quiz': typeof LearnModulesModuleIdQuizRoute
   '/learn/modules/$moduleId/': typeof LearnModulesModuleIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/course': typeof CourseRoute
@@ -185,10 +207,13 @@ export interface FileRoutesByTo {
   '/research': typeof ResearchRoute
   '/volunteer': typeof VolunteerRoute
   '/learn/modules': typeof LearnModulesRouteRouteWithChildren
+  '/admin/volunteers': typeof AdminVolunteersRouteWithChildren
   '/learn/dashboard': typeof LearnDashboardRoute
   '/learn/final': typeof LearnFinalRoute
   '/learn/login': typeof LearnLoginRoute
   '/learn': typeof LearnIndexRoute
+  '/admin/volunteers/completed': typeof AdminVolunteersCompletedRoute
+  '/admin/volunteers/ids': typeof AdminVolunteersIdsRoute
   '/learn/modules/$moduleId/quiz': typeof LearnModulesModuleIdQuizRoute
   '/learn/modules/$moduleId': typeof LearnModulesModuleIdIndexRoute
 }
@@ -197,7 +222,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/learn': typeof LearnRouteRouteWithChildren
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/course': typeof CourseRoute
@@ -209,11 +234,14 @@ export interface FileRoutesById {
   '/research': typeof ResearchRoute
   '/volunteer': typeof VolunteerRoute
   '/learn/modules': typeof LearnModulesRouteRouteWithChildren
+  '/admin/volunteers': typeof AdminVolunteersRouteWithChildren
   '/learn/dashboard': typeof LearnDashboardRoute
   '/learn/final': typeof LearnFinalRoute
   '/learn/login': typeof LearnLoginRoute
   '/learn/': typeof LearnIndexRoute
   '/learn/modules/$moduleId': typeof LearnModulesModuleIdRouteRouteWithChildren
+  '/admin/volunteers/completed': typeof AdminVolunteersCompletedRoute
+  '/admin/volunteers/ids': typeof AdminVolunteersIdsRoute
   '/learn/modules/$moduleId/quiz': typeof LearnModulesModuleIdQuizRoute
   '/learn/modules/$moduleId/': typeof LearnModulesModuleIdIndexRoute
 }
@@ -235,11 +263,14 @@ export interface FileRouteTypes {
     | '/research'
     | '/volunteer'
     | '/learn/modules'
+    | '/admin/volunteers'
     | '/learn/dashboard'
     | '/learn/final'
     | '/learn/login'
     | '/learn/'
     | '/learn/modules/$moduleId'
+    | '/admin/volunteers/completed'
+    | '/admin/volunteers/ids'
     | '/learn/modules/$moduleId/quiz'
     | '/learn/modules/$moduleId/'
   fileRoutesByTo: FileRoutesByTo
@@ -258,10 +289,13 @@ export interface FileRouteTypes {
     | '/research'
     | '/volunteer'
     | '/learn/modules'
+    | '/admin/volunteers'
     | '/learn/dashboard'
     | '/learn/final'
     | '/learn/login'
     | '/learn'
+    | '/admin/volunteers/completed'
+    | '/admin/volunteers/ids'
     | '/learn/modules/$moduleId/quiz'
     | '/learn/modules/$moduleId'
   id:
@@ -281,11 +315,14 @@ export interface FileRouteTypes {
     | '/research'
     | '/volunteer'
     | '/learn/modules'
+    | '/admin/volunteers'
     | '/learn/dashboard'
     | '/learn/final'
     | '/learn/login'
     | '/learn/'
     | '/learn/modules/$moduleId'
+    | '/admin/volunteers/completed'
+    | '/admin/volunteers/ids'
     | '/learn/modules/$moduleId/quiz'
     | '/learn/modules/$moduleId/'
   fileRoutesById: FileRoutesById
@@ -294,7 +331,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LearnRouteRoute: typeof LearnRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   CareersRoute: typeof CareersRoute
   ContactRoute: typeof ContactRoute
   CourseRoute: typeof CourseRoute
@@ -435,12 +472,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LearnDashboardRouteImport
       parentRoute: typeof LearnRouteRoute
     }
+    '/admin/volunteers': {
+      id: '/admin/volunteers'
+      path: '/volunteers'
+      fullPath: '/admin/volunteers'
+      preLoaderRoute: typeof AdminVolunteersRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/learn/modules': {
       id: '/learn/modules'
       path: '/modules'
       fullPath: '/learn/modules'
       preLoaderRoute: typeof LearnModulesRouteRouteImport
       parentRoute: typeof LearnRouteRoute
+    }
+    '/admin/volunteers/ids': {
+      id: '/admin/volunteers/ids'
+      path: '/ids'
+      fullPath: '/admin/volunteers/ids'
+      preLoaderRoute: typeof AdminVolunteersIdsRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/admin/volunteers/completed': {
+      id: '/admin/volunteers/completed'
+      path: '/completed'
+      fullPath: '/admin/volunteers/completed'
+      preLoaderRoute: typeof AdminVolunteersCompletedRouteImport
+      parentRoute: typeof AdminVolunteersRoute
     }
     '/learn/modules/$moduleId': {
       id: '/learn/modules/$moduleId'
@@ -513,11 +571,35 @@ const LearnRouteRouteWithChildren = LearnRouteRoute._addFileChildren(
   LearnRouteRouteChildren,
 )
 
+interface AdminVolunteersRouteChildren {
+  AdminVolunteersCompletedRoute: typeof AdminVolunteersCompletedRoute
+  AdminVolunteersIdsRoute: typeof AdminVolunteersIdsRoute
+}
+
+const AdminVolunteersRouteChildren: AdminVolunteersRouteChildren = {
+  AdminVolunteersCompletedRoute: AdminVolunteersCompletedRoute,
+  AdminVolunteersIdsRoute: AdminVolunteersIdsRoute,
+}
+
+const AdminVolunteersRouteWithChildren = AdminVolunteersRoute._addFileChildren(
+  AdminVolunteersRouteChildren,
+)
+
+interface AdminRouteChildren {
+  AdminVolunteersRoute: typeof AdminVolunteersRouteWithChildren
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminVolunteersRoute: AdminVolunteersRouteWithChildren,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LearnRouteRoute: LearnRouteRouteWithChildren,
   AboutRoute: AboutRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   CareersRoute: CareersRoute,
   ContactRoute: ContactRoute,
   CourseRoute: CourseRoute,

@@ -55,6 +55,11 @@
   transform: translateY(-1px);
 }
 
+.course-btn-primary:disabled {
+  opacity: 0.6;
+  transform: none;
+}
+
 .course-btn-secondary {
   display: inline-flex;
   align-items: center;

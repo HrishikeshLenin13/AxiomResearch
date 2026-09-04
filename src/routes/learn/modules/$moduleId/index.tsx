@@ -8,6 +8,7 @@ import {
 } from "../../../../course/data/modules";
 import { QUIZ_QUESTIONS_PER_MODULE } from "../../../../course/data/quizzes";
 import type { Callout } from "../../../../course/data/module-types";
+import { useEffect } from "react";
 import { useCourse } from "../../../../course/context/CourseProvider";
 
 export const Route = createFileRoute("/learn/modules/$moduleId/")({
@@ -24,8 +25,15 @@ export const Route = createFileRoute("/learn/modules/$moduleId/")({
 
 function ModuleLessonPage() {
   const { moduleId } = Route.useParams();
-  const { progress } = useCourse();
+  const { progress, recordLessonComplete } = useCourse();
   const module = getModuleById(moduleId);
+
+  useEffect(() => {
+    if (module && isModuleUnlocked(module.id, progress?.completedModuleIds ?? [])) {
+      void recordLessonComplete(module.id);
+    }
+  }, [module, progress?.completedModuleIds, recordLessonComplete]);
+
   if (!module) return null;
 
   const completed = progress?.completedModuleIds ?? [];

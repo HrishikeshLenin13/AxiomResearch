@@ -10,11 +10,14 @@
  *    - Execute as: Me
  *    - Who has access: Anyone
  * 6. Copy the Web App URL into your app .env as VITE_GOOGLE_SHEETS_WEBHOOK_URL
+ *
+ * Volunteers sheet upserts by Volunteer ID. Students/Events remain for older email-based rows.
  */
 
 const SPREADSHEET_ID = "PASTE_YOUR_SHEET_ID_HERE";
 const STUDENTS_SHEET = "Students";
 const EVENTS_SHEET = "Events";
+const VOLUNTEERS_SHEET = "Volunteers";
 
 function setup() {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -51,62 +54,129 @@ function setup() {
     "Modules Passed",
     "Module Scores (JSON)",
   ]]);
+
+  ensureVolunteersSheet(ss);
+}
+
+function volunteerHeaders() {
+  return [
+    "Volunteer ID",
+    "First Name",
+    "Last Name",
+    "Status",
+    "Progress %",
+    "Modules Completed",
+    "Lessons Viewed",
+    "Average Quiz Grade",
+    "Final Grade",
+    "Current Module",
+    "Started At",
+    "Last Active",
+    "Completed At",
+    "Course Submitted",
+    "Total Quiz Attempts",
+    "Access Code Used",
+  ];
+}
+
+function ensureVolunteersSheet(ss) {
+  let volunteers = ss.getSheetByName(VOLUNTEERS_SHEET);
+  if (!volunteers) {
+    volunteers = ss.insertSheet(VOLUNTEERS_SHEET);
+    volunteers.getRange(1, 1, 1, volunteerHeaders().length).setValues([volunteerHeaders()]);
+    return volunteers;
+  }
+  if (volunteers.getLastRow() === 0) {
+    volunteers.getRange(1, 1, 1, volunteerHeaders().length).setValues([volunteerHeaders()]);
+  }
+  return volunteers;
 }
 
 function doPost(e) {
   try {
     const body = JSON.parse(e.postData.contents);
     const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-    const students = ss.getSheetByName(STUDENTS_SHEET);
-    const events = ss.getSheetByName(EVENTS_SHEET);
+    let students = ss.getSheetByName(STUDENTS_SHEET);
+    let events = ss.getSheetByName(EVENTS_SHEET);
+    const volunteers = ensureVolunteersSheet(ss);
 
     if (!students || !events) {
       setup();
-      return ContentService.createTextOutput(JSON.stringify({ ok: false, error: "Run setup() first" }))
-        .setMimeType(ContentService.MimeType.JSON);
+      students = ss.getSheetByName(STUDENTS_SHEET);
+      events = ss.getSheetByName(EVENTS_SHEET);
     }
 
+    const volunteerId = String(body.volunteerId || "").trim();
     const email = String(body.email || "").trim().toLowerCase();
-    if (!email) {
-      return ContentService.createTextOutput(JSON.stringify({ ok: false, error: "Missing email" }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-
-    const completed = Number(body.completedModules || 0);
+    const completed = Number(body.modulesCompleted || body.completedModules || 0);
     const total = Number(body.totalModules || 8);
-    const progressPct = total > 0 ? Math.round((completed / total) * 100) : 0;
+    const progressPct = body.progressPct != null
+      ? Number(body.progressPct)
+      : (total > 0 ? Math.round((completed / total) * 100) : 0);
     const timeMin = Number(body.timeSpentMinutes || 0);
     const modulesPassed = (body.modulesPassed || []).join(", ");
     const scoresJson = JSON.stringify(body.moduleScores || {});
     const now = new Date();
-    const status = completed >= total ? "Complete" : completed > 0 ? "In progress" : "Started";
+    const eventName = String(body.event || "progress");
+    const status = String(body.status || (
+      eventName === "complete" || body.completedAt || body.courseSubmitted
+        ? "Completed"
+        : eventName === "restart"
+          ? "Started"
+          : completed > 0 ? "In progress" : "Started"
+    ));
 
-    upsertStudent(students, {
-      email,
-      name: String(body.name || ""),
-      uid: String(body.uid || ""),
-      completed,
-      total,
-      progressPct,
-      timeMin,
-      modulesPassed,
-      scoresJson,
-      lastActive: String(body.lastActive || now.toISOString()),
-      event: String(body.event || "progress"),
-      now,
-      status,
-    });
+    if (volunteerId) {
+      upsertVolunteer(volunteers, {
+        volunteerId: volunteerId,
+        firstName: String(body.firstName || ""),
+        lastName: String(body.lastName || ""),
+        status: status,
+        progressPct: progressPct,
+        modulesCompleted: completed,
+        lessonsViewed: Number(body.lessonsViewed || body.lessonsCompleted || 0),
+        averageQuizGrade: body.averageQuizGrade == null ? "" : body.averageQuizGrade,
+        finalGrade: body.finalGrade == null ? "" : body.finalGrade,
+        currentModule: String(body.currentModule || ""),
+        startedAt: String(body.startedAt || ""),
+        lastActive: String(body.lastActive || now.toISOString()),
+        completedAt: String(body.completedAt || ""),
+        courseSubmitted: body.courseSubmitted ? "Yes" : "No",
+        totalQuizAttempts: Number(body.totalQuizAttempts || 0),
+        accessCodeUsed: String(body.accessCodeUsed || ""),
+      });
+    }
 
-    events.appendRow([
-      now,
-      String(body.event || "progress"),
-      email,
-      String(body.name || ""),
-      completed,
-      timeMin,
-      modulesPassed,
-      scoresJson,
-    ]);
+    if (email && students) {
+      upsertStudent(students, {
+        email: email,
+        name: String(body.name || ""),
+        uid: String(body.uid || volunteerId || ""),
+        completed: completed,
+        total: total,
+        progressPct: progressPct,
+        timeMin: timeMin,
+        modulesPassed: modulesPassed,
+        scoresJson: scoresJson,
+        lastActive: String(body.lastActive || now.toISOString()),
+        event: eventName,
+        now: now,
+        status: status,
+      });
+    }
+
+    if (events && (email || volunteerId)) {
+      events.appendRow([
+        now,
+        eventName,
+        email || volunteerId,
+        String(body.name || [body.firstName, body.lastName].filter(Boolean).join(" ")),
+        completed,
+        timeMin,
+        modulesPassed,
+        scoresJson,
+      ]);
+    }
 
     return ContentService.createTextOutput(JSON.stringify({ ok: true }))
       .setMimeType(ContentService.MimeType.JSON);
@@ -138,6 +208,39 @@ function upsertStudent(sheet, data) {
     data.now,
     data.status,
     "",
+  ];
+
+  if (rowIndex === -1) {
+    sheet.appendRow(row);
+  } else {
+    sheet.getRange(rowIndex + 2, 1, 1, row.length).setValues([row]);
+  }
+}
+
+function upsertVolunteer(sheet, data) {
+  const lastRow = sheet.getLastRow();
+  const ids = lastRow > 1
+    ? sheet.getRange(2, 1, lastRow - 1, 1).getValues().flat().map(function (v) { return String(v).trim(); })
+    : [];
+  const rowIndex = ids.indexOf(data.volunteerId);
+
+  const row = [
+    data.volunteerId,
+    data.firstName,
+    data.lastName,
+    data.status,
+    data.progressPct,
+    data.modulesCompleted,
+    data.lessonsViewed,
+    data.averageQuizGrade,
+    data.finalGrade,
+    data.currentModule,
+    data.startedAt,
+    data.lastActive,
+    data.completedAt,
+    data.courseSubmitted,
+    data.totalQuizAttempts,
+    data.accessCodeUsed,
   ];
 
   if (rowIndex === -1) {

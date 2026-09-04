@@ -15,24 +15,10 @@ export const adminGhostButtonClass =
 
 export const adminCategories = [
   {
-    title: "Management",
+    title: "Volunteers",
     sections: [
-      { id: "marketing-interns", label: "Marketing Interns" },
-      { id: "members", label: "Members" },
-    ],
-  },
-  {
-    title: "System",
-    sections: [
-      { id: "dashboard", label: "Dashboard" },
-      { id: "version-history", label: "Version History" },
-    ],
-  },
-  {
-    title: "Tools",
-    sections: [
-      { id: "website-editor", label: "Website Editor" },
-      { id: "navigation-editor", label: "Navigation Editor" },
+      { id: "volunteer-summary", label: "Summary" },
+      { id: "all-volunteers", label: "All volunteers" },
     ],
   },
 ] as const;

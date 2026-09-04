@@ -11,9 +11,9 @@ export const Route = createFileRoute("/login")({
   validateSearch: (search: Record<string, unknown>): LoginSearch => ({
     redirect: typeof search.redirect === "string" ? search.redirect : "/admin",
   }),
-  beforeLoad: () => {
+  beforeLoad: ({ search }) => {
     if (isAdminSessionActive()) {
-      throw redirect({ to: "/admin" });
+      throw redirect({ href: search.redirect || "/admin" });
     }
   },
   head: () => ({
@@ -38,7 +38,7 @@ function LoginPage() {
     setSubmitting(true);
     try {
       signInAdmin(password);
-      navigate({ to: redirectTo || "/admin" });
+      navigate({ href: redirectTo || "/admin" });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed.");
     } finally {

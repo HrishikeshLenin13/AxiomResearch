@@ -17,7 +17,7 @@ import {
   signOut as firebaseSignOut,
   type User,
 } from "firebase/auth";
-import { COURSE_MODULES, FINAL_QUIZ_ID, PASSING_SCORE, RETAKE_SCORE_CAP } from "../data/modules";
+import { FINAL_QUIZ_ID, PASSING_SCORE, RETAKE_SCORE_CAP } from "../data/modules";
 import { getFirebaseAuth, isFirebaseConfigured } from "../lib/firebase";
 import { COURSE_PREVIEW_MODE } from "../lib/preview";
 import {
@@ -29,38 +29,22 @@ import {
   type CourseProgressDoc,
   type ModuleScoreRecord,
 } from "../lib/progress";
-import { buildSheetsPayload, queueSheetsSync } from "../lib/sheets-sync";
-
-const PREVIEW_STORAGE_KEY = "axiom-course-preview-progress";
-
-function freshPreviewProgress(email = "preview@local"): CourseProgressDoc {
-  return {
-    ...emptyCourseProgress(email),
-    timerSessionStartedAt: Date.now(),
-  };
-}
-
-function loadPreviewProgress(): CourseProgressDoc {
-  const empty = freshPreviewProgress();
-  if (typeof window === "undefined") return empty;
-  try {
-    const raw = window.localStorage.getItem(PREVIEW_STORAGE_KEY);
-    if (!raw) return empty;
-    const parsed = JSON.parse(raw) as Partial<CourseProgressDoc>;
-    return {
-      ...normalizeCourseProgress(parsed.email || empty.email, parsed),
-      timerSessionStartedAt: Date.now(),
-    };
-  } catch {
-    return empty;
-  }
-}
-
-function writePreviewProgress(next: CourseProgressDoc) {
-  if (typeof window === "undefined") return;
-  window.localStorage.removeItem(PREVIEW_STORAGE_KEY);
-  window.localStorage.setItem(PREVIEW_STORAGE_KEY, JSON.stringify(next));
-}
+import { buildVolunteerSheetsPayload, queueSheetsSync, type SheetsSyncEvent } from "../lib/sheets-sync";
+import { writeLocalVolunteerProgress } from "../lib/volunteer-cache";
+import { registerNewVolunteer as registerNewVolunteerRecord, resumeVolunteerById } from "../lib/volunteer-records";
+import {
+  clearVolunteerIdentity,
+  readAccessGranted,
+  readAccessCodeUsed,
+  readVolunteerIdentity,
+  verifyVolunteerAccessCode,
+  writeAccessGranted,
+  writeAccessCodeUsed,
+  writeVolunteerIdentity,
+  type VolunteerIdentity,
+} from "../lib/volunteer-session";
+import { markVolunteerIdCompleted } from "../lib/volunteer-ids";
+import { applyProgressDerivedFields } from "../lib/volunteer-stats";
 
 type QuizAttemptResult = {
   passed: boolean;
@@ -69,14 +53,27 @@ type QuizAttemptResult = {
   capped: boolean;
 };
 
+type IdentifyResult = { ok: true } | { ok: false; error: string };
+
+type RegisterVolunteerResult =
+  | { ok: true; volunteerId: string; firstName: string; lastName: string }
+  | { ok: false; error: string };
+
 type CourseContextValue = {
   configured: boolean;
   loading: boolean;
   user: User | null;
+  volunteer: VolunteerIdentity | null;
+  accessGranted: boolean;
   progress: CourseProgressDoc | null;
   activeTimerMs: number;
   quizSessionActive: boolean;
+  sheetsWarning: string | null;
   setQuizSessionActive: (active: boolean) => void;
+  grantAccess: (code: string) => Promise<boolean>;
+  registerNewVolunteer: (firstName: string, lastName: string) => Promise<RegisterVolunteerResult>;
+  resumeVolunteer: (volunteerId: string) => Promise<IdentifyResult>;
+  switchVolunteer: () => void;
   signInWithGoogle: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signUpWithEmail: (email: string, password: string) => Promise<void>;
@@ -85,21 +82,24 @@ type CourseContextValue = {
   resetCourseProgress: () => Promise<void>;
   submitCourse: () => Promise<void>;
   recordQuizAttempt: (moduleId: string, score: number) => Promise<QuizAttemptResult>;
+  recordLessonComplete: (moduleId: string) => Promise<void>;
 };
 
 const CourseContext = createContext<CourseContextValue | null>(null);
 
 export function CourseProvider({ children }: { children: ReactNode }) {
   const configured = isFirebaseConfigured();
-  const [loading, setLoading] = useState(!COURSE_PREVIEW_MODE);
+  const [loading, setLoading] = useState(Boolean(readVolunteerIdentity()));
   const [user, setUser] = useState<User | null>(null);
-  const [progress, setProgress] = useState<CourseProgressDoc | null>(
-    COURSE_PREVIEW_MODE ? loadPreviewProgress() : null,
-  );
+  const [accessGranted, setAccessGranted] = useState(readAccessGranted);
+  const [volunteer, setVolunteer] = useState<VolunteerIdentity | null>(readVolunteerIdentity);
+  const [progress, setProgress] = useState<CourseProgressDoc | null>(null);
   const [quizSessionActive, setQuizSessionActive] = useState(false);
+  const [sheetsWarning, setSheetsWarning] = useState<string | null>(null);
   const [tick, setTick] = useState(Date.now());
   const progressRef = useRef<CourseProgressDoc | null>(progress);
   const userRef = useRef<User | null>(null);
+  const volunteerRef = useRef<VolunteerIdentity | null>(volunteer);
 
   useEffect(() => {
     progressRef.current = progress;
@@ -109,25 +109,42 @@ export function CourseProvider({ children }: { children: ReactNode }) {
     userRef.current = user;
   }, [user]);
 
-  const syncProgress = useCallback(
-    (event: "login" | "progress" | "quiz" | "timer" | "signout", next: CourseProgressDoc, timeMs: number) => {
-      const currentUser = userRef.current;
-      if (!currentUser) return;
-      queueSheetsSync(
-        buildSheetsPayload(event, currentUser, next, COURSE_MODULES.length, timeMs),
-      );
-    },
-    [],
-  );
+  useEffect(() => {
+    volunteerRef.current = volunteer;
+  }, [volunteer]);
+
+  const syncProgress = useCallback((event: SheetsSyncEvent, next: CourseProgressDoc, timeMs: number) => {
+    if (!next.volunteerId) return;
+    queueSheetsSync(buildVolunteerSheetsPayload(event, next, timeMs, {
+      uid: userRef.current?.uid ?? next.volunteerId,
+      email: userRef.current?.email ?? next.email,
+      name: userRef.current?.displayName ?? `${next.firstName} ${next.lastName}`.trim(),
+    }), (message) => setSheetsWarning(message));
+  }, []);
 
   const persistProgress = useCallback(
-    async (next: CourseProgressDoc, event: "progress" | "quiz" | "timer" = "progress") => {
-      const written = normalizeCourseProgress(next.email, next);
+    async (next: CourseProgressDoc, event: SheetsSyncEvent = "progress") => {
+      const identity = volunteerRef.current;
+      const withIdentity = normalizeCourseProgress(next.email, {
+        ...next,
+        volunteerId: next.volunteerId || identity?.volunteerId || "",
+        firstName: next.firstName || identity?.firstName || "",
+        lastName: next.lastName || identity?.lastName || "",
+      });
+      const written = applyProgressDerivedFields(withIdentity);
       setProgress(written);
       progressRef.current = written;
-      if (COURSE_PREVIEW_MODE) {
-        writePreviewProgress(written);
+      if (written.volunteerId) {
+        writeLocalVolunteerProgress(written);
+        try {
+          await saveCourseProgress(written.volunteerId, written);
+        } catch (error) {
+          console.warn("Firebase progress save failed", error);
+        }
+        syncProgress(event, written, getActiveTimerMs(written));
+        return;
       }
+
       const currentUser = userRef.current;
       if (!currentUser) return;
       await saveCourseProgress(currentUser.uid, written);
@@ -137,23 +154,60 @@ export function CourseProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
-    if (COURSE_PREVIEW_MODE) {
+    const identity = volunteer;
+    if (!identity) {
+      if (!COURSE_PREVIEW_MODE && !user) {
+        setProgress(null);
+      }
       setLoading(false);
       return;
     }
 
+    let cancelled = false;
+    setLoading(true);
+
+    async function hydrateVolunteer() {
+      try {
+        const result = await resumeVolunteerById(identity.volunteerId);
+        if (cancelled) return;
+        if (!result.ok) {
+          clearVolunteerIdentity();
+          setVolunteer(null);
+          setProgress(null);
+          return;
+        }
+        const hydrated: CourseProgressDoc = {
+          ...result.progress,
+          timerSessionStartedAt: Date.now(),
+        };
+        setVolunteer(result.identity);
+        writeVolunteerIdentity(result.identity);
+        await persistProgress(hydrated, "login");
+      } catch (error) {
+        console.warn("Unable to restore volunteer progress", error);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    void hydrateVolunteer();
+    return () => {
+      cancelled = true;
+    };
+  }, [persistProgress, volunteer?.volunteerId]);
+
+  useEffect(() => {
+    if (COURSE_PREVIEW_MODE) return;
+
     const auth = getFirebaseAuth();
     if (!auth) {
-      setProgress({
-        ...emptyCourseProgress(""),
-        timerSessionStartedAt: Date.now(),
-      });
-      setLoading(false);
+      setLoading((current) => (volunteerRef.current ? current : false));
       return;
     }
 
     const unsubscribe = onAuthStateChanged(auth, async (nextUser) => {
       setUser(nextUser);
+      if (volunteerRef.current) return;
       if (!nextUser) {
         setProgress(null);
         setLoading(false);
@@ -176,45 +230,84 @@ export function CourseProvider({ children }: { children: ReactNode }) {
   }, [syncProgress]);
 
   useEffect(() => {
-    if (!user || !progress?.timerSessionStartedAt) return;
+    if (!volunteer || !progress?.timerSessionStartedAt) return;
     const interval = window.setInterval(() => setTick(Date.now()), 1000);
     return () => window.clearInterval(interval);
-  }, [user, progress?.timerSessionStartedAt]);
+  }, [volunteer, progress?.timerSessionStartedAt]);
 
   useEffect(() => {
-    if (!user || !progress) return;
+    if (!volunteer || !progress) return;
     const interval = window.setInterval(() => {
       const current = progressRef.current;
       if (!current) return;
       syncProgress("timer", current, getActiveTimerMs(current, Date.now()));
     }, 60000);
     return () => window.clearInterval(interval);
-  }, [user, progress, syncProgress]);
+  }, [volunteer, progress, syncProgress]);
 
   useEffect(() => {
-    if (!user) return;
+    if (!volunteer) return;
 
     function handleUnload() {
       const current = progressRef.current;
       if (!current?.timerSessionStartedAt) return;
-      const next: CourseProgressDoc = {
+      const next: CourseProgressDoc = applyProgressDerivedFields({
         ...current,
         timerAccumulatedMs: getActiveTimerMs(current),
         timerSessionStartedAt: null,
-        updatedAt: new Date().toISOString(),
-      };
-      void saveCourseProgress(user.uid, next);
+      });
+      writeLocalVolunteerProgress(next);
+      void saveCourseProgress(next.volunteerId || volunteer.volunteerId, next);
       syncProgress("signout", next, getActiveTimerMs(next));
     }
 
     window.addEventListener("beforeunload", handleUnload);
     return () => window.removeEventListener("beforeunload", handleUnload);
-  }, [user, syncProgress]);
+  }, [volunteer, syncProgress]);
 
   const activeTimerMs = useMemo(() => {
     if (!progress) return 0;
     return getActiveTimerMs(progress, tick);
   }, [progress, tick]);
+
+  const grantAccess = useCallback(async (code: string) => {
+    const ok = await verifyVolunteerAccessCode(code);
+    if (!ok) return false;
+    writeAccessGranted();
+    writeAccessCodeUsed(code);
+    setAccessGranted(true);
+    return true;
+  }, []);
+
+  const registerNewVolunteer = useCallback(async (
+    firstName: string,
+    lastName: string,
+  ): Promise<RegisterVolunteerResult> => {
+    const result = await registerNewVolunteerRecord(firstName, lastName);
+    if (!result.ok) return result;
+    await persistProgress(result.progress, "login");
+    return {
+      ok: true,
+      volunteerId: result.identity.volunteerId,
+      firstName: result.identity.firstName,
+      lastName: result.identity.lastName,
+    };
+  }, [persistProgress]);
+
+  const resumeVolunteer = useCallback(async (volunteerId: string): Promise<IdentifyResult> => {
+    const result = await resumeVolunteerById(volunteerId);
+    if (!result.ok) return result;
+    writeVolunteerIdentity(result.identity);
+    setVolunteer(result.identity);
+    await persistProgress(result.progress, "login");
+    return { ok: true };
+  }, [persistProgress]);
+
+  const switchVolunteer = useCallback(() => {
+    clearVolunteerIdentity();
+    setVolunteer(null);
+    setProgress(null);
+  }, []);
 
   const signInWithGoogle = useCallback(async () => {
     const auth = getFirebaseAuth();
@@ -236,56 +329,54 @@ export function CourseProvider({ children }: { children: ReactNode }) {
     await createUserWithEmailAndPassword(auth, email.trim(), password);
   }, []);
 
-  const pauseTimerSession = useCallback(async () => {
-    if (!progress || !progress.timerSessionStartedAt) return;
-    const next: CourseProgressDoc = {
-      ...progress,
-      timerAccumulatedMs: getActiveTimerMs(progress),
-      timerSessionStartedAt: null,
-      updatedAt: new Date().toISOString(),
-    };
-    await persistProgress(next, "timer");
-  }, [persistProgress, progress]);
-
   const signOut = useCallback(async () => {
     const current = progressRef.current;
-    if (current && user) {
-      const next: CourseProgressDoc = {
+    if (current && (volunteer || user)) {
+      const next: CourseProgressDoc = applyProgressDerivedFields({
         ...current,
         timerAccumulatedMs: getActiveTimerMs(current),
         timerSessionStartedAt: null,
-        updatedAt: new Date().toISOString(),
-      };
-      await saveCourseProgress(user.uid, next);
+      });
+      if (next.volunteerId) {
+        writeLocalVolunteerProgress(next);
+        await saveCourseProgress(next.volunteerId, next);
+      } else if (user) {
+        await saveCourseProgress(user.uid, next);
+      }
       syncProgress("signout", next, getActiveTimerMs(next));
     }
+    switchVolunteer();
     const auth = getFirebaseAuth();
     if (!auth) return;
     await firebaseSignOut(auth);
-  }, [syncProgress, user]);
+  }, [switchVolunteer, syncProgress, user, volunteer]);
 
   const resetTimer = useCallback(async () => {
     if (!progress) return;
-    const next: CourseProgressDoc = {
-      ...progress,
-      timerAccumulatedMs: 0,
-      timerSessionStartedAt: Date.now(),
-      updatedAt: new Date().toISOString(),
-    };
-    await persistProgress(next, "timer");
+    await persistProgress(
+      {
+        ...progress,
+        timerAccumulatedMs: 0,
+        timerSessionStartedAt: Date.now(),
+      },
+      "timer",
+    );
   }, [persistProgress, progress]);
 
   const resetCourseProgress = useCallback(async () => {
+    const identity = volunteerRef.current;
     const email =
       progressRef.current?.email ||
       userRef.current?.email ||
-      (COURSE_PREVIEW_MODE ? "preview@local" : "");
+      "";
     await persistProgress(
       {
-        ...emptyCourseProgress(email),
+        ...emptyCourseProgress(email, identity ?? undefined),
+        accessCodeUsed: progressRef.current?.accessCodeUsed || readAccessCodeUsed(),
+        startedAt: new Date().toISOString(),
         timerSessionStartedAt: Date.now(),
       },
-      "progress",
+      "restart",
     );
   }, [persistProgress]);
 
@@ -294,14 +385,20 @@ export function CourseProvider({ children }: { children: ReactNode }) {
     if (!current) return;
     const finalRecord = current.moduleScores[FINAL_QUIZ_ID];
     if (!finalRecord?.passed || current.courseSubmitted) return;
+    const now = new Date().toISOString();
     await persistProgress(
       {
         ...current,
         courseSubmitted: true,
-        updatedAt: new Date().toISOString(),
+        completedAt: now,
+        finalGrade: finalRecord.score,
+        overallProgressPct: 100,
       },
-      "progress",
+      "complete",
     );
+    if (current.volunteerId) {
+      await markVolunteerIdCompleted(current.volunteerId);
+    }
   }, [persistProgress]);
 
   const recordQuizAttempt = useCallback(
@@ -341,7 +438,6 @@ export function CourseProvider({ children }: { children: ReactNode }) {
         ...current,
         moduleScores,
         completedModuleIds,
-        updatedAt: new Date().toISOString(),
       };
       await persistProgress(next, "quiz");
       return {
@@ -354,15 +450,37 @@ export function CourseProvider({ children }: { children: ReactNode }) {
     [persistProgress],
   );
 
+  const recordLessonComplete = useCallback(
+    async (moduleId: string) => {
+      const current = progressRef.current;
+      if (!current || current.completedLessonIds.includes(moduleId)) return;
+      await persistProgress(
+        {
+          ...current,
+          completedLessonIds: [...current.completedLessonIds, moduleId],
+        },
+        "lesson",
+      );
+    },
+    [persistProgress],
+  );
+
   const value = useMemo(
     () => ({
       configured,
       loading,
       user,
+      volunteer,
+      accessGranted,
       progress,
       activeTimerMs,
       quizSessionActive,
+      sheetsWarning,
       setQuizSessionActive,
+      grantAccess,
+      registerNewVolunteer,
+      resumeVolunteer,
+      switchVolunteer,
       signInWithGoogle,
       signInWithEmail,
       signUpWithEmail,
@@ -371,14 +489,22 @@ export function CourseProvider({ children }: { children: ReactNode }) {
       resetCourseProgress,
       submitCourse,
       recordQuizAttempt,
+      recordLessonComplete,
     }),
     [
       configured,
       loading,
       user,
+      volunteer,
+      accessGranted,
       progress,
       activeTimerMs,
       quizSessionActive,
+      sheetsWarning,
+      grantAccess,
+      registerNewVolunteer,
+      resumeVolunteer,
+      switchVolunteer,
       signInWithGoogle,
       signInWithEmail,
       signUpWithEmail,
@@ -387,6 +513,7 @@ export function CourseProvider({ children }: { children: ReactNode }) {
       resetCourseProgress,
       submitCourse,
       recordQuizAttempt,
+      recordLessonComplete,
     ],
   );
 

@@ -1,10 +1,14 @@
 import { useNavigate } from "@tanstack/react-router";
 import { BookOpen } from "lucide-react";
-import type { User } from "firebase/auth";
 import { useCourse } from "../context/CourseProvider";
 
+type CourseHeaderUser = {
+  email?: string | null;
+  displayName?: string | null;
+} | null;
+
 type CourseHeaderProps = {
-  user: User | null;
+  user: CourseHeaderUser;
   onSignOut?: () => void;
   showCourseBadge?: boolean;
   homeTo?: "/learn" | "/learn/dashboard";
@@ -12,7 +16,10 @@ type CourseHeaderProps = {
 
 export function CourseHeader({ user, showCourseBadge = true, homeTo = "/learn" }: CourseHeaderProps) {
   const navigate = useNavigate();
-  const { quizSessionActive, setQuizSessionActive } = useCourse();
+  const { quizSessionActive, setQuizSessionActive, volunteer, switchVolunteer } = useCourse();
+  const displayLabel = volunteer
+    ? `${volunteer.firstName} ${volunteer.lastName}`.trim()
+    : user?.email || user?.displayName || "";
 
   function goHome() {
     if (
@@ -39,10 +46,19 @@ export function CourseHeader({ user, showCourseBadge = true, homeTo = "/learn" }
               Course
             </span>
           ) : null}
-          {user?.email ? (
+          {displayLabel ? (
             <span className="hidden lg:inline text-[var(--course-ink-soft)] truncate max-w-[180px]">
-              {user.email}
+              {displayLabel}
             </span>
+          ) : null}
+          {volunteer ? (
+            <button
+              type="button"
+              onClick={switchVolunteer}
+              className="hidden sm:inline text-xs text-[var(--course-ink-soft)] hover:text-[var(--course-ink)]"
+            >
+              Switch volunteer
+            </button>
           ) : null}
         </div>
       </div>

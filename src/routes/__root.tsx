@@ -62,6 +62,7 @@ function RootComponent() {
   const loc = useLocation();
   const hidePublicChrome =
     loc.pathname === "/admin" ||
+    loc.pathname.startsWith("/admin/") ||
     loc.pathname === "/login" ||
     loc.pathname.startsWith("/learn");
   return (

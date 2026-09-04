@@ -12,10 +12,10 @@ import { CourseHeader } from "./CourseHeader";
 import { CourseProgressBar } from "./CourseProgressBar";
 
 export function CourseDashboard() {
-  const { user, progress, resetCourseProgress, submitCourse } = useCourse();
+  const { user, volunteer, progress, resetCourseProgress, submitCourse, sheetsWarning } = useCourse();
   const completed = progress?.completedModuleIds ?? [];
   const total = COURSE_MODULES.length;
-  const firstName = user?.displayName?.split(" ")[0] ?? "Student";
+  const firstName = volunteer?.firstName ?? user?.displayName?.split(" ")[0] ?? "Student";
   const modulesPassed = COURSE_MODULES.filter((module) => completed.includes(module.id)).length;
   const finalRecord = progress?.moduleScores[FINAL_QUIZ_ID];
   const finalUnlocked = isFinalUnlocked(completed);
@@ -34,6 +34,16 @@ export function CourseDashboard() {
       <main className="mx-auto max-w-3xl px-5 py-10 md:py-14">
         <p className="course-kicker">Welcome</p>
         <h1 className="course-serif text-5xl md:text-6xl mt-2 leading-none">{firstName}</h1>
+        {volunteer ? (
+          <p className="mt-2 text-sm text-[var(--course-ink-soft)]">
+            Volunteer ID {volunteer.volunteerId}
+          </p>
+        ) : null}
+        {sheetsWarning ? (
+          <p className="mt-3 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+            {sheetsWarning}
+          </p>
+        ) : null}
         <p className="text-[var(--course-ink-soft)] mt-3 max-w-xl">
           Pass each unit quiz with {Math.round(PASSING_SCORE * 100)}% to unlock the next unit. After
           all eight quizzes, take the final exam, then submit the course. Only multiple-choice

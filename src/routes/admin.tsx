@@ -1,13 +1,10 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { LayoutDashboard } from "lucide-react";
-import { AdminCategoryGroup } from "../components/admin/AdminSectionPanel";
 import { AdminSidebar } from "../components/admin/AdminSidebar";
-import { DashboardSection } from "../components/admin/DashboardSection";
-import { MarketingInternsSection } from "../components/admin/MarketingInternsSection";
-import { MembersSection } from "../components/admin/MembersSection";
-import { NavigationEditorSection } from "../components/admin/NavigationEditorSection";
-import { VersionHistorySection } from "../components/admin/VersionHistorySection";
-import { WebsiteEditorSection } from "../components/admin/WebsiteEditorSection";
+import {
+  AllVolunteersSection,
+  VolunteerSummarySection,
+} from "../components/admin/VolunteerCourseSection";
 import { isAdminSessionActive, signOutAdmin } from "../lib/admin-session";
 
 export const Route = createFileRoute("/admin")({
@@ -39,9 +36,10 @@ function AdminPage() {
         <header className="rounded-2xl border border-border bg-white/50 p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Admin</p>
-            <h1 className="mt-2 text-3xl md:text-4xl font-semibold">Axiom Dashboard</h1>
+            <h1 className="mt-2 text-3xl md:text-4xl font-semibold">Volunteer course dashboard</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Manage interns, members, and site configuration from one place.
+              Track volunteer signups, progress, and completions from Firestore. Google Sheets syncs
+              automatically when configured.
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -62,20 +60,8 @@ function AdminPage() {
           <AdminSidebar />
 
           <div className="flex-1 rounded-2xl border border-border bg-white/30 p-5 md:p-6 space-y-10">
-            <AdminCategoryGroup title="Management">
-              <MarketingInternsSection />
-              <MembersSection />
-            </AdminCategoryGroup>
-
-            <AdminCategoryGroup title="System">
-              <DashboardSection />
-              <VersionHistorySection />
-            </AdminCategoryGroup>
-
-            <AdminCategoryGroup title="Tools">
-              <WebsiteEditorSection />
-              <NavigationEditorSection />
-            </AdminCategoryGroup>
+            <VolunteerSummarySection />
+            <AllVolunteersSection />
           </div>
         </div>
       </div>
