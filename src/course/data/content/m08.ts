@@ -5,7 +5,7 @@ export const module08: CourseModule = {
   number: 8,
   title: "Statistics for Beginners",
   summary:
-    "Build intuition for descriptive statistics, distributions, correlation, and introductory inference so you can interpret data honestly and communicate findings clearly.",
+    "Build intuition for descriptive statistics, distributions, correlation, and introductory inference so you can interpret data honestly and push back when numbers are misused in meetings or papers.",
   estimatedMinutes: 110,
   learningObjectives: [
     "Calculate and interpret mean, median, mode, and standard deviation",

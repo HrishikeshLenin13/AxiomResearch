@@ -5,7 +5,7 @@ export const module04: CourseModule = {
   number: 4,
   title: "Reading Research Papers",
   summary:
-    "Learn the anatomy of research papers, efficient reading strategies used by experts, and how to annotate, interpret methods and results, and assess limitations.",
+    "Learn the anatomy of research papers, efficient reading strategies used by experts, and how to annotate, interpret methods and results, and assess limitations—so you can read what your Axiom mentors assign without getting lost.",
   estimatedMinutes: 100,
   learningObjectives: [
     "Identify the purpose of each major section in a standard research paper",

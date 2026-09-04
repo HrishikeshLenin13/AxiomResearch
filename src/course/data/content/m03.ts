@@ -5,7 +5,7 @@ export const module03: CourseModule = {
   number: 3,
   title: "Finding Reliable Sources",
   summary:
-    "Learn to distinguish primary, secondary, and tertiary sources; use academic databases effectively; and detect predatory journals, bias, and misinformation.",
+    "Learn to distinguish primary, secondary, and tertiary sources; use academic databases effectively; and detect predatory journals, bias, and misinformation—skills you will use on every Axiom literature review.",
   estimatedMinutes: 100,
   learningObjectives: [
     "Distinguish primary, secondary, and tertiary sources and use each appropriately",

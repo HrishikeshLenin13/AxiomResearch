@@ -1,14 +1,20 @@
 import {
+  deleteCourseProgress,
   emptyCourseProgress,
   getCourseProgress,
+  isVolunteerDeleted,
   listRemoteCourseProgress,
+  saveCourseProgress,
   type CourseProgressDoc,
 } from "./progress";
 import {
   loadLocalVolunteerProgress,
   listLocalVolunteerProgress,
+  removeLocalVolunteerProgress,
+  writeLocalVolunteerProgress,
 } from "./volunteer-cache";
 import {
+  deleteVolunteerIdRecord,
   generateVolunteerIdForSignup,
   getVolunteerIdRecord,
   validateVolunteerIdFormat,
@@ -86,6 +92,13 @@ export async function resumeVolunteerById(volunteerId: string): Promise<Identify
     };
   }
 
+  if (existing && isVolunteerDeleted(existing)) {
+    return {
+      ok: false,
+      error: "This volunteer record was removed. Contact Axiom if you need help.",
+    };
+  }
+
   const identity: VolunteerIdentity = {
     volunteerId: idCheck.id,
     firstName: existing?.firstName || idRecord?.firstName || "",
@@ -151,4 +164,46 @@ export async function listVolunteerRecords(): Promise<CourseProgressDoc[]> {
   return [...map.values()].sort((a, b) =>
     Date.parse(b.lastActiveAt || b.updatedAt) - Date.parse(a.lastActiveAt || a.updatedAt),
   );
+}
+
+export function splitVolunteerRecords(records: CourseProgressDoc[]) {
+  const active = records.filter((row) => !isVolunteerDeleted(row));
+  const deleted = records
+    .filter((row) => isVolunteerDeleted(row))
+    .sort((a, b) => Date.parse(b.deletedAt || b.updatedAt) - Date.parse(a.deletedAt || a.updatedAt));
+  return { active, deleted };
+}
+
+export async function softDeleteVolunteerRecord(volunteerId: string) {
+  const id = normalizeVolunteerId(volunteerId);
+  if (!id) throw new Error("Invalid volunteer ID.");
+
+  const existing = await lookupVolunteerProgress(id);
+  if (!existing) throw new Error("Volunteer not found.");
+  if (isVolunteerDeleted(existing)) return existing;
+
+  const now = new Date().toISOString();
+  const next: CourseProgressDoc = {
+    ...existing,
+    deletedAt: now,
+    updatedAt: now,
+  };
+  await saveCourseProgress(id, next);
+  writeLocalVolunteerProgress(next);
+  return next;
+}
+
+export async function permanentlyDeleteVolunteerRecord(volunteerId: string) {
+  const id = normalizeVolunteerId(volunteerId);
+  if (!id) throw new Error("Invalid volunteer ID.");
+
+  const existing = await lookupVolunteerProgress(id);
+  if (!existing) throw new Error("Volunteer not found.");
+  if (!isVolunteerDeleted(existing)) {
+    throw new Error("Move the volunteer to Recently deleted before deleting forever.");
+  }
+
+  await deleteCourseProgress(id);
+  await deleteVolunteerIdRecord(id);
+  removeLocalVolunteerProgress(id);
 }

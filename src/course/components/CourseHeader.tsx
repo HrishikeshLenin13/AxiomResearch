@@ -1,5 +1,6 @@
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { BookOpen } from "lucide-react";
+import { BookOpen, ChevronDown } from "lucide-react";
 import { useCourse } from "../context/CourseProvider";
 
 type CourseHeaderUser = {
@@ -17,9 +18,22 @@ type CourseHeaderProps = {
 export function CourseHeader({ user, showCourseBadge = true, homeTo = "/learn" }: CourseHeaderProps) {
   const navigate = useNavigate();
   const { quizSessionActive, setQuizSessionActive, volunteer, switchVolunteer } = useCourse();
+  const [idOpen, setIdOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const displayLabel = volunteer
     ? `${volunteer.firstName} ${volunteer.lastName}`.trim()
     : user?.email || user?.displayName || "";
+
+  useEffect(() => {
+    if (!idOpen) return;
+    function onPointerDown(event: MouseEvent) {
+      if (!menuRef.current?.contains(event.target as Node)) {
+        setIdOpen(false);
+      }
+    }
+    window.addEventListener("mousedown", onPointerDown);
+    return () => window.removeEventListener("mousedown", onPointerDown);
+  }, [idOpen]);
 
   function goHome() {
     if (
@@ -30,6 +44,15 @@ export function CourseHeader({ user, showCourseBadge = true, homeTo = "/learn" }
     }
     setQuizSessionActive(false);
     navigate({ to: homeTo });
+  }
+
+  async function copyVolunteerId() {
+    if (!volunteer?.volunteerId) return;
+    try {
+      await navigator.clipboard.writeText(volunteer.volunteerId);
+    } catch {
+      // Clipboard may be unavailable; the ID is still visible.
+    }
   }
 
   return (
@@ -46,8 +69,39 @@ export function CourseHeader({ user, showCourseBadge = true, homeTo = "/learn" }
               Course
             </span>
           ) : null}
-          {displayLabel ? (
-            <span className="hidden lg:inline text-[var(--course-ink-soft)] truncate max-w-[180px]">
+          {displayLabel && volunteer ? (
+            <div className="relative" ref={menuRef}>
+              <button
+                type="button"
+                onClick={() => setIdOpen((open) => !open)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-[var(--course-line)] px-3 py-1.5 text-[var(--course-ink)] hover:bg-[var(--course-paper)] transition max-w-[220px]"
+                aria-expanded={idOpen}
+                aria-haspopup="true"
+              >
+                <span className="truncate">{displayLabel}</span>
+                <ChevronDown size={14} className="shrink-0 text-[var(--course-ink-soft)]" />
+              </button>
+              {idOpen ? (
+                <div className="absolute right-0 top-full mt-2 w-72 rounded-xl border border-[var(--course-line)] bg-[var(--course-bg)] shadow-lg p-4 z-40">
+                  <p className="text-xs uppercase tracking-wide text-[var(--course-ink-soft)]">
+                    Your Volunteer ID
+                  </p>
+                  <p className="mt-2 font-mono text-sm font-semibold break-all">{volunteer.volunteerId}</p>
+                  <p className="mt-2 text-xs text-[var(--course-ink-soft)] leading-relaxed">
+                    Save this ID. You need it to resume the course on another visit.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => void copyVolunteerId()}
+                    className="mt-3 course-btn-secondary !py-2 !px-4 !text-xs w-full"
+                  >
+                    Copy ID
+                  </button>
+                </div>
+              ) : null}
+            </div>
+          ) : displayLabel ? (
+            <span className="hidden sm:inline text-[var(--course-ink-soft)] truncate max-w-[180px]">
               {displayLabel}
             </span>
           ) : null}

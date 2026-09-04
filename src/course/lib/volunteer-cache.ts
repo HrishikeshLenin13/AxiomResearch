@@ -51,6 +51,14 @@ export function listLocalVolunteerProgress(): CourseProgressDoc[] {
     .filter((doc): doc is CourseProgressDoc => Boolean(doc?.volunteerId));
 }
 
+export function removeLocalVolunteerProgress(volunteerId: string) {
+  if (typeof localStorage === "undefined") return;
+  const id = volunteerDocId(volunteerId);
+  localStorage.removeItem(progressKey(volunteerId));
+  const registry = readVolunteerRegistry().filter((entry) => entry !== id);
+  localStorage.setItem(VOLUNTEER_REGISTRY_KEY, JSON.stringify(registry));
+}
+
 export function identityFromProgress(progress: CourseProgressDoc): VolunteerIdentity | null {
   if (!progress.volunteerId || !progress.firstName || !progress.lastName) return null;
   return {

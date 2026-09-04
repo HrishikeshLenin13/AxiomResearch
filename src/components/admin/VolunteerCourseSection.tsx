@@ -1,19 +1,42 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import type { CourseProgressDoc } from "../../course/lib/progress";
-import { listVolunteerRecords } from "../../course/lib/volunteer-records";
+import {
+  listVolunteerRecords,
+  permanentlyDeleteVolunteerRecord,
+  softDeleteVolunteerRecord,
+  splitVolunteerRecords,
+} from "../../course/lib/volunteer-records";
 import {
   computeAverageQuizGrade,
   currentModuleLabel,
   formatDate,
+  formatDateTime,
   formatPercent,
   isActiveVolunteer,
   volunteerDisplayName,
   volunteerStatus,
 } from "../../course/lib/volunteer-stats";
+import { adminGhostButtonClass } from "./constants";
 import { AdminSectionPanel } from "./AdminSectionPanel";
 
-function VolunteerTable({ rows, empty }: { rows: CourseProgressDoc[]; empty: string }) {
+type VolunteerTableProps = {
+  rows: CourseProgressDoc[];
+  empty: string;
+  onDelete?: (volunteerId: string) => void;
+  deleteLabel?: string;
+  deletingId?: string | null;
+  showDeletedAt?: boolean;
+};
+
+function VolunteerTable({
+  rows,
+  empty,
+  onDelete,
+  deleteLabel = "Delete",
+  deletingId,
+  showDeletedAt = false,
+}: VolunteerTableProps) {
   if (rows.length === 0) {
     return (
       <p className="rounded-xl border border-dashed border-border bg-white/30 px-4 py-8 text-center text-sm text-muted-foreground">
@@ -36,6 +59,8 @@ function VolunteerTable({ rows, empty }: { rows: CourseProgressDoc[]; empty: str
             <th className="py-2 pr-3 font-medium">Quiz grade</th>
             <th className="py-2 pr-3 font-medium">Final grade</th>
             <th className="py-2 pr-3 font-medium">Completed</th>
+            {showDeletedAt ? <th className="py-2 pr-3 font-medium">Deleted</th> : null}
+            {onDelete ? <th className="py-2 pr-3 font-medium">Actions</th> : null}
           </tr>
         </thead>
         <tbody>
@@ -50,6 +75,21 @@ function VolunteerTable({ rows, empty }: { rows: CourseProgressDoc[]; empty: str
               <td className="py-3 pr-3">{formatPercent(computeAverageQuizGrade(row))}</td>
               <td className="py-3 pr-3">{formatPercent(row.finalGrade)}</td>
               <td className="py-3 pr-3">{formatDate(row.completedAt)}</td>
+              {showDeletedAt ? (
+                <td className="py-3 pr-3">{formatDateTime(row.deletedAt)}</td>
+              ) : null}
+              {onDelete ? (
+                <td className="py-3 pr-3">
+                  <button
+                    type="button"
+                    disabled={deletingId === row.volunteerId}
+                    onClick={() => onDelete(row.volunteerId)}
+                    className={`${adminGhostButtonClass} !text-destructive hover:!text-destructive disabled:opacity-50`}
+                  >
+                    {deletingId === row.volunteerId ? "Working..." : deleteLabel}
+                  </button>
+                </td>
+              ) : null}
             </tr>
           ))}
         </tbody>
@@ -62,10 +102,17 @@ export function useVolunteerRecords() {
   const [records, setRecords] = useState<CourseProgressDoc[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [reloadToken, setReloadToken] = useState(0);
+
+  const reload = useCallback(() => {
+    setReloadToken((value) => value + 1);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
     async function load() {
+      setLoading(true);
+      setError("");
       try {
         const next = await listVolunteerRecords();
         if (!cancelled) setRecords(next);
@@ -81,12 +128,17 @@ export function useVolunteerRecords() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [reloadToken]);
 
-  const active = useMemo(() => records.filter((row) => isActiveVolunteer(row)), [records]);
-  const completed = useMemo(() => records.filter((row) => row.courseSubmitted), [records]);
+  const { active: liveRecords, deleted } = useMemo(
+    () => splitVolunteerRecords(records),
+    [records],
+  );
 
-  return { records, active, completed, loading, error };
+  const active = useMemo(() => liveRecords.filter((row) => isActiveVolunteer(row)), [liveRecords]);
+  const completed = useMemo(() => liveRecords.filter((row) => row.courseSubmitted), [liveRecords]);
+
+  return { records: liveRecords, deleted, active, completed, loading, error, reload };
 }
 
 function SummaryCard({ label, value }: { label: string; value: string }) {
@@ -142,20 +194,107 @@ export function VolunteerSummarySection() {
 }
 
 export function AllVolunteersSection() {
-  const { records, loading, error } = useVolunteerRecords();
+  const { records, loading, error, reload } = useVolunteerRecords();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState("");
+
+  async function handleDelete(volunteerId: string) {
+    const name = records.find((row) => row.volunteerId === volunteerId);
+    const label = name ? volunteerDisplayName(name) : volunteerId;
+    if (
+      !window.confirm(
+        `Move ${label} to Recently deleted? They will lose course access until you delete them forever from that section.`,
+      )
+    ) {
+      return;
+    }
+    setActionError("");
+    setDeletingId(volunteerId);
+    try {
+      await softDeleteVolunteerRecord(volunteerId);
+      reload();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "Could not delete volunteer.");
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   return (
     <AdminSectionPanel
       id="all-volunteers"
       title="All volunteers"
-      description="Every volunteer who signed up. IDs are auto-generated at signup — no manual pre-generation needed."
+      description="Every active volunteer record. Delete moves someone to Recently deleted — they cannot resume the course until you remove them permanently or re-create them."
     >
       {loading ? (
         <p className="text-sm text-muted-foreground">Loading volunteers...</p>
       ) : error ? (
         <p className="text-sm text-destructive">{error}</p>
       ) : (
-        <VolunteerTable rows={records} empty="No volunteers have signed up yet." />
+        <>
+          {actionError ? <p className="mb-3 text-sm text-destructive">{actionError}</p> : null}
+          <VolunteerTable
+            rows={records}
+            empty="No volunteers have signed up yet."
+            onDelete={handleDelete}
+            deleteLabel="Delete"
+            deletingId={deletingId}
+          />
+        </>
+      )}
+    </AdminSectionPanel>
+  );
+}
+
+export function RecentlyDeletedVolunteersSection() {
+  const { deleted, loading, error, reload } = useVolunteerRecords();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState("");
+
+  async function handlePermanentDelete(volunteerId: string) {
+    const row = deleted.find((entry) => entry.volunteerId === volunteerId);
+    const label = row ? volunteerDisplayName(row) : volunteerId;
+    if (
+      !window.confirm(
+        `Permanently delete ${label} (${volunteerId})? This removes their progress and ID from Firestore and cannot be undone.`,
+      )
+    ) {
+      return;
+    }
+    setActionError("");
+    setDeletingId(volunteerId);
+    try {
+      await permanentlyDeleteVolunteerRecord(volunteerId);
+      reload();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "Could not permanently delete volunteer.");
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
+  return (
+    <AdminSectionPanel
+      id="recently-deleted"
+      title="Recently deleted volunteers"
+      description="Volunteers you removed from the active list. Delete forever erases their progress and Volunteer ID from the system."
+    >
+      {loading ? (
+        <p className="text-sm text-muted-foreground">Loading deleted volunteers...</p>
+      ) : error ? (
+        <p className="text-sm text-destructive">{error}</p>
+      ) : (
+        <>
+          {actionError ? <p className="mb-3 text-sm text-destructive">{actionError}</p> : null}
+          <VolunteerTable
+            rows={deleted}
+            empty="No recently deleted volunteers."
+            onDelete={handlePermanentDelete}
+            deleteLabel="Delete forever"
+            deletingId={deletingId}
+            showDeletedAt
+          />
+        </>
       )}
     </AdminSectionPanel>
   );

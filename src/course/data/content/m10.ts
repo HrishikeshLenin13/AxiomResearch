@@ -5,7 +5,7 @@ export const module10: CourseModule = {
   number: 10,
   title: "Scientific Writing",
   summary:
-    "Develop the skills to write clear, objective research papers—from abstracts and methods to results and discussion—in formats used by scientific journals and student competitions.",
+    "Develop the skills to write clear, objective research papers—from abstracts and methods to results and discussion—in the format mentors, fairs, and journals expect.",
   estimatedMinutes: 105,
   learningObjectives: [
     "Distinguish scientific writing from persuasive or creative writing in tone and structure",

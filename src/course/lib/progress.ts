@@ -1,5 +1,6 @@
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -41,6 +42,7 @@ export type CourseProgressDoc = {
   completedAt: string | null;
   finalGrade: number | null;
   overallProgressPct: number;
+  deletedAt: string | null;
 };
 
 export function emptyCourseProgress(
@@ -66,7 +68,12 @@ export function emptyCourseProgress(
     completedAt: null,
     finalGrade: null,
     overallProgressPct: 0,
+    deletedAt: null,
   };
+}
+
+export function isVolunteerDeleted(progress: CourseProgressDoc) {
+  return Boolean(progress.deletedAt);
 }
 
 function asIso(value: unknown, fallback: string) {
@@ -110,6 +117,7 @@ export function normalizeCourseProgress(
     completedAt: data.completedAt ? asIso(data.completedAt, "") || null : null,
     finalGrade: typeof data.finalGrade === "number" ? data.finalGrade : null,
     overallProgressPct: typeof data.overallProgressPct === "number" ? data.overallProgressPct : 0,
+    deletedAt: data.deletedAt ? asIso(data.deletedAt, "") || null : null,
   };
 }
 
@@ -156,6 +164,12 @@ export async function saveCourseProgress(docId: string, progress: CourseProgress
     ...progress,
     updatedAt: serverTimestamp(),
   });
+}
+
+export async function deleteCourseProgress(docId: string) {
+  const ref = progressDocRef(docId);
+  if (!ref) return;
+  await deleteDoc(ref);
 }
 
 export async function listRemoteCourseProgress(): Promise<CourseProgressDoc[]> {

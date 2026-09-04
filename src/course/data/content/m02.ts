@@ -5,7 +5,7 @@ export const module02: CourseModule = {
   number: 2,
   title: "Choosing a Research Topic",
   summary:
-    "Learn how to find feasible, meaningful research topics with the right scope, evaluate gaps in existing knowledge, and refine broad ideas into focused questions.",
+    "Learn how to find feasible, meaningful research topics with the right scope, evaluate gaps in existing knowledge, and refine broad ideas into focused questions—the step where most Axiom projects succeed or stall.",
   estimatedMinutes: 90,
   learningObjectives: [
     "Evaluate topic scope, feasibility, and available resources before committing",

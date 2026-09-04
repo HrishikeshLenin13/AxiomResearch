@@ -1,5 +1,6 @@
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -263,6 +264,12 @@ export async function markVolunteerIdActivated(id: string, firstName: string, la
     activatedAt: current.activatedAt || now,
     updatedAt: serverTimestamp(),
   });
+}
+
+export async function deleteVolunteerIdRecord(id: string) {
+  const ref = volunteerIdRef(id);
+  if (!ref) return;
+  await deleteDoc(ref);
 }
 
 export async function markVolunteerIdCompleted(id: string) {

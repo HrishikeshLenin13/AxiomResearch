@@ -5,7 +5,7 @@ export const module12: CourseModule = {
   number: 12,
   title: "AI in Research",
   summary:
-    "Learn to use artificial intelligence tools responsibly for literature discovery, organization, and drafting—while verifying every claim and maintaining academic integrity.",
+    "Learn to use AI tools responsibly for literature discovery and drafting while verifying every claim—Axiom projects increasingly involve AI, and volunteers must not let it replace judgment.",
   estimatedMinutes: 100,
   learningObjectives: [
     "Describe realistic capabilities and limits of AI tools in the research workflow",

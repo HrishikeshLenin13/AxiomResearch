@@ -5,7 +5,7 @@ export const module07: CourseModule = {
   number: 7,
   title: "Experimental Design",
   summary:
-    "Compare study designs, sampling strategies, validity threats, and ethical requirements so you can plan rigorous, responsible research.",
+    "Compare study designs, sampling strategies, validity threats, and ethical requirements so you can plan a study Axiom mentors will take seriously.",
   estimatedMinutes: 100,
   learningObjectives: [
     "Distinguish experimental, observational, and descriptive study designs",

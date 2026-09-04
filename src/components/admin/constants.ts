@@ -19,6 +19,7 @@ export const adminCategories = [
     sections: [
       { id: "volunteer-summary", label: "Summary" },
       { id: "all-volunteers", label: "All volunteers" },
+      { id: "recently-deleted", label: "Recently deleted" },
     ],
   },
 ] as const;

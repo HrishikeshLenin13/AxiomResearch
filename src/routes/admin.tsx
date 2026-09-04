@@ -3,6 +3,7 @@ import { LayoutDashboard } from "lucide-react";
 import { AdminSidebar } from "../components/admin/AdminSidebar";
 import {
   AllVolunteersSection,
+  RecentlyDeletedVolunteersSection,
   VolunteerSummarySection,
 } from "../components/admin/VolunteerCourseSection";
 import { isAdminSessionActive, signOutAdmin } from "../lib/admin-session";
@@ -62,6 +63,7 @@ function AdminPage() {
           <div className="flex-1 rounded-2xl border border-border bg-white/30 p-5 md:p-6 space-y-10">
             <VolunteerSummarySection />
             <AllVolunteersSection />
+            <RecentlyDeletedVolunteersSection />
           </div>
         </div>
       </div>
