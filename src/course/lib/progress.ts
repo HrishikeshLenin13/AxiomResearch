@@ -185,20 +185,4 @@ export async function listRemoteCourseProgress(): Promise<CourseProgressDoc[]> {
     .filter((doc) => Boolean(doc.volunteerId));
 }
 
-export function getActiveTimerMs(progress: CourseProgressDoc, now = Date.now()) {
-  const sessionMs = progress.timerSessionStartedAt
-    ? now - progress.timerSessionStartedAt
-    : 0;
-  return progress.timerAccumulatedMs + sessionMs;
-}
-
-export function formatDuration(ms: number) {
-  const totalSeconds = Math.floor(ms / 1000);
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  if (hours > 0) {
-    return `${hours}h ${minutes}m ${seconds}s`;
-  }
-  return `${minutes}m ${seconds}s`;
-}
+export { getActiveTimerMs, formatDuration } from "./course-timer";
