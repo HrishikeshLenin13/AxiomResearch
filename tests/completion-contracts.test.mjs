@@ -92,3 +92,7 @@ const r=summary.studySummaryData(progress,[...modules].reverse(),0);assert.deepE
 test("structured-summary-bounds-negative-scores", () => {
 const r=summary.studySummaryData({...progress,moduleScores:{a:{score:-2}}},modules,0);assert.equal(r.modules[0].score,0);assert.equal(r.modules[1].score,null);
 });
+
+test("structured-summary-bounds-overfull-scores", () => {
+const r=summary.studySummaryData({...progress,moduleScores:{a:{score:2}}},modules,0);assert.equal(r.modules[0].score,1);
+});
