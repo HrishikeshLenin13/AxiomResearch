@@ -100,3 +100,7 @@ const r=summary.studySummaryData({...progress,moduleScores:{a:{score:2}}},module
 test("structured-summary-does-not-export-nonfinite-scores", () => {
 for(const score of [NaN,Infinity,-Infinity])assert.equal(summary.studySummaryData({...progress,moduleScores:{a:{score}}},modules,0).modules[0].score,null);
 });
+
+test("structured-summary-excludes-account-metadata", () => {
+const r=summary.studySummaryData({...progress,email:'hidden',volunteerId:'hidden',accessCodeUsed:'hidden'},modules,0);assert.ok(!JSON.stringify(r).includes('hidden'));
+});
