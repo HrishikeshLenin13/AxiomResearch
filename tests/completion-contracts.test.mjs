@@ -160,3 +160,7 @@ const csv=summary.studySummaryCsv(progress,[],0);assert.equal(csv.trim().split('
 test("markdown-escapes-html-and-table-delimiters", () => {
 const md=summary.studySummaryMarkdown(progress,[{id:'a',title:'<b>A|B</b>'}],0);assert.ok(md.includes('&lt;b&gt;'));assert.ok(md.includes('A\\|B'));
 });
+
+test("markdown-flattens-multiline-course-titles", () => {
+const md=summary.studySummaryMarkdown(progress,[{id:'a',title:'A\nB'}],0);assert.ok(md.includes('A B'));assert.ok(!md.includes('| A\nB'));
+});
