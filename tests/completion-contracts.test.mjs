@@ -64,3 +64,7 @@ const p=timer.pauseCourseTimer({timerAccumulatedMs:5,timerSessionStartedAt:100},
 test("pause-preserves-unrelated-progress-metadata", () => {
 const p={timerAccumulatedMs:5,timerSessionStartedAt:100,module:'a'};assert.equal(timer.pauseCourseTimer(p,120).module,'a');assert.equal(p.timerSessionStartedAt,100);
 });
+
+test("resume-preserves-an-already-active-start", () => {
+const p={timerAccumulatedMs:5,timerSessionStartedAt:100};assert.deepEqual(timer.resumeCourseTimer(p,999),p);assert.notEqual(timer.resumeCourseTimer(p,999),p);
+});
