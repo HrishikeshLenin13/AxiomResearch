@@ -7,12 +7,14 @@ type ModuleSummary = {id:string; title:string};
 
 /** A study aid, not a completion certificate. Never includes account/access fields. */
 export function studySummary(progress: ProgressSummary, modules: readonly ModuleSummary[], timerMs: number): string {
-  const passed = modules.filter(module => progress.completedModuleIds.includes(module.id)).length;
+  const completed = new Set(Array.isArray(progress.completedModuleIds) ? progress.completedModuleIds : []);
+  const scores = progress.moduleScores && typeof progress.moduleScores === "object" ? progress.moduleScores : {};
+  const passed = modules.filter(module => completed.has(module.id)).length;
   const lines = ['Axiom study summary', `Units passed: ${passed}/${modules.length}`, `Study time: ${formatDuration(timerMs)}`, ''];
   for (const module of modules) {
-    const record = progress.moduleScores[module.id];
+    const record = scores[module.id];
     const score = record && Number.isFinite(record.score) ? ` — ${Math.round(Math.min(1, Math.max(0, record.score)) * 100)}%` : '';
-    lines.push(`${progress.completedModuleIds.includes(module.id) ? '[passed]' : '[pending]'} ${module.title}${score}`);
+    lines.push(`${completed.has(module.id) ? '[passed]' : '[pending]'} ${String(module.title).replace(/[\r\n\t]+/g, " ")}${score}`);
   }
   lines.push('', 'Personal study record only; not a certificate or independently verified service-hours record.');
   return lines.join('\n') + '\n';
@@ -27,9 +29,11 @@ export function downloadStudySummary(progress: ProgressSummary, modules: readonl
 
 /** Explicitly allowlisted machine-readable study data. */
 export function studySummaryData(progress: ProgressSummary, modules: readonly ModuleSummary[], timerMs: number) {
+  const completed = new Set(Array.isArray(progress.completedModuleIds) ? progress.completedModuleIds : []);
+  const scores = progress.moduleScores && typeof progress.moduleScores === "object" ? progress.moduleScores : {};
   return {schemaVersion:1, studyTimeMs:Number.isFinite(timerMs) ? Math.min(Number.MAX_SAFE_INTEGER, Math.max(0, timerMs)) : 0,
     modules:modules.map(module => {
-      const record=progress.moduleScores[module.id];
-      return {title:module.title, passed:progress.completedModuleIds.includes(module.id), score:record && Number.isFinite(record.score) ? Math.min(1,Math.max(0,record.score)) : null};
+      const record=scores[module.id];
+      return {title:module.title, passed:completed.has(module.id), score:record && Number.isFinite(record.score) ? Math.min(1,Math.max(0,record.score)) : null};
     })};
 }
