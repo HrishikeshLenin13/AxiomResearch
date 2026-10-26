@@ -180,3 +180,7 @@ const s=summary.studySummaryStats(progress,modules);assert.equal(s.scored,1);ass
 test("empty-statistics-do-not-invent-an-average", () => {
 assert.deepEqual(summary.studySummaryStats(progress,[]),{total:0,passed:0,scored:0,averageScore:null});
 });
+
+test("export-generation-does-not-mutate-saved-progress", () => {
+const before=JSON.stringify(progress);for(const fn of [summary.studySummary,summary.studySummaryCsv,summary.studySummaryMarkdown,summary.studySummaryData])fn(progress,modules,100);assert.equal(JSON.stringify(progress),before);
+});
