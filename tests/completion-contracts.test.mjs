@@ -148,3 +148,7 @@ assert.ok(summary.studySummaryCsv(progress,[{id:'a',title:"@sum(A1)"}],0).includ
 test("csv-neutralizes-leading-space-formulas", () => {
 assert.ok(summary.studySummaryCsv(progress,[{id:'a',title:"  =1"}],0).includes("'"+"  =1"));
 });
+
+test("csv-includes-elapsed-time-on-each-module-row", () => {
+const rows=summary.studySummaryCsv(progress,modules,321).trim().split('\r\n');assert.equal(rows.length,3);assert.ok(rows.slice(1).every(row=>row.endsWith('"321"')));
+});
