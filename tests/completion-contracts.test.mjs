@@ -124,3 +124,7 @@ const r=summary.studySummaryData(progress,modules,55);assert.deepEqual(JSON.pars
 test("csv-escapes-embedded-double-quotes", () => {
 assert.ok(summary.studySummaryCsv(progress,[{id:'a',title:'A "quote"'}],0).includes('A ""quote""'));
 });
+
+test("csv-quotes-embedded-commas", () => {
+assert.ok(summary.studySummaryCsv(progress,[{id:'a',title:'A, B'}],0).includes('"A, B"'));
+});
