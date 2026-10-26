@@ -80,3 +80,7 @@ const p={timerAccumulatedMs:5,timerSessionStartedAt:null};for(const time of [NaN
 test("invalid-pause-times-do-not-clear-a-session", () => {
 const p={timerAccumulatedMs:5,timerSessionStartedAt:10};for(const time of [NaN,Infinity,-Infinity])assert.throws(()=>timer.pauseCourseTimer(p,time));assert.equal(p.timerSessionStartedAt,10);
 });
+
+test("structured-summary-ignores-unknown-completed-ids", () => {
+const r=summary.studySummaryData({...progress,completedModuleIds:['missing']},modules,0);assert.equal(r.modules[0].passed,false);assert.equal(r.modules.length,2);
+});
