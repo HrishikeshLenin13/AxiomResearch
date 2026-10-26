@@ -13,7 +13,7 @@ export function getActiveTimerMs(progress: TimerProgress, now = Date.now()) {
 }
 
 export function formatDuration(ms: number) {
-  const totalSeconds = Math.floor(nonNegativeMs(ms) / 1000);
+  const totalSeconds = Math.floor(Math.min(Number.MAX_SAFE_INTEGER, nonNegativeMs(ms)) / 1000);
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
