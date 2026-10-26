@@ -84,3 +84,7 @@ const p={timerAccumulatedMs:5,timerSessionStartedAt:10};for(const time of [NaN,I
 test("structured-summary-ignores-unknown-completed-ids", () => {
 const r=summary.studySummaryData({...progress,completedModuleIds:['missing']},modules,0);assert.equal(r.modules[0].passed,false);assert.equal(r.modules.length,2);
 });
+
+test("structured-summary-retains-course-order", () => {
+const r=summary.studySummaryData(progress,[...modules].reverse(),0);assert.deepEqual(r.modules.map(m=>m.title),['Second','First']);
+});
