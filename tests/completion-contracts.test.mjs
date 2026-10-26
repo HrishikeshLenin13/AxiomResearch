@@ -104,3 +104,7 @@ for(const score of [NaN,Infinity,-Infinity])assert.equal(summary.studySummaryDat
 test("structured-summary-excludes-account-metadata", () => {
 const r=summary.studySummaryData({...progress,email:'hidden',volunteerId:'hidden',accessCodeUsed:'hidden'},modules,0);assert.ok(!JSON.stringify(r).includes('hidden'));
 });
+
+test("structured-summary-does-not-export-unknown-module-records", () => {
+const r=summary.studySummaryData({...progress,moduleScores:{secret:{score:1}}},modules,0);assert.ok(!JSON.stringify(r).includes('secret'));assert.equal(r.modules[0].score,null);
+});
