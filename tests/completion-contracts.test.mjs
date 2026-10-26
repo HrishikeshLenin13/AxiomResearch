@@ -172,3 +172,7 @@ const text=summary.studySummary(progress,modules,0);assert.ok(text.includes('[pa
 test("text-summary-is-explicitly-not-a-certificate", () => {
 assert.ok(summary.studySummary(progress,modules,0).includes('not a certificate'));assert.ok(summary.studySummaryMarkdown(progress,modules,0).includes('not a certificate'));
 });
+
+test("statistics-do-not-average-unscored-units-as-zero", () => {
+const s=summary.studySummaryStats(progress,modules);assert.equal(s.scored,1);assert.equal(s.averageScore,.75);assert.equal(s.total,2);
+});
