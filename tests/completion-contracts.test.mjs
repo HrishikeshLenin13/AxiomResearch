@@ -132,3 +132,7 @@ assert.ok(summary.studySummaryCsv(progress,[{id:'a',title:'A, B'}],0).includes('
 test("csv-neutralizes-equals-formulas", () => {
 assert.ok(summary.studySummaryCsv(progress,[{id:'a',title:"=1+2"}],0).includes("'"+"=1+2"));
 });
+
+test("csv-neutralizes-plus-formulas", () => {
+assert.ok(summary.studySummaryCsv(progress,[{id:'a',title:"+1"}],0).includes("'"+"+1"));
+});
