@@ -128,3 +128,7 @@ assert.ok(summary.studySummaryCsv(progress,[{id:'a',title:'A "quote"'}],0).inclu
 test("csv-quotes-embedded-commas", () => {
 assert.ok(summary.studySummaryCsv(progress,[{id:'a',title:'A, B'}],0).includes('"A, B"'));
 });
+
+test("csv-neutralizes-equals-formulas", () => {
+assert.ok(summary.studySummaryCsv(progress,[{id:'a',title:"=1+2"}],0).includes("'"+"=1+2"));
+});
