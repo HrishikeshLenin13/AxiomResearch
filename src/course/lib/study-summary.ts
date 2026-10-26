@@ -19,10 +19,10 @@ export function studySummary(progress: ProgressSummary, modules: readonly Module
   lines.push('', 'Personal study record only; not a certificate or independently verified service-hours record.');
   return lines.join('\n') + '\n';
 }
-export function downloadStudySummary(progress: ProgressSummary, modules: readonly ModuleSummary[], timerMs: number, format: "text" | "json" = "text") {
-  const payload = format === "json" ? JSON.stringify(studySummaryData(progress,modules,timerMs), null, 2) + "\n" : studySummary(progress,modules,timerMs);
-  const url = URL.createObjectURL(new Blob([payload], {type:format === 'json' ? 'application/json' : 'text/plain;charset=utf-8'}));
-  const link = document.createElement('a');link.href=url;link.download=format === 'json' ? 'axiom-study-summary.json' : 'axiom-study-summary.txt';
+export function downloadStudySummary(progress: ProgressSummary, modules: readonly ModuleSummary[], timerMs: number, format: "text" | "json" | "csv" = "text") {
+  const payload = format === "csv" ? studySummaryCsv(progress,modules,timerMs) : format === "json" ? JSON.stringify(studySummaryData(progress,modules,timerMs), null, 2) + "\n" : studySummary(progress,modules,timerMs);
+  const url = URL.createObjectURL(new Blob([payload], {type:format === 'csv' ? 'text/csv;charset=utf-8' : format === 'json' ? 'application/json' : 'text/plain;charset=utf-8'}));
+  const link = document.createElement('a');link.href=url;link.download=format === 'csv' ? 'axiom-study-summary.csv' : format === 'json' ? 'axiom-study-summary.json' : 'axiom-study-summary.txt';
   document.body.append(link);link.click();link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
@@ -36,4 +36,17 @@ export function studySummaryData(progress: ProgressSummary, modules: readonly Mo
       const record=scores[module.id];
       return {title:module.title, passed:completed.has(module.id), score:record && Number.isFinite(record.score) ? Math.min(1,Math.max(0,record.score)) : null};
     })};
+}
+
+/** CSV is a local study aid and contains no identity or access fields. */
+export function studySummaryCsv(progress: ProgressSummary, modules: readonly ModuleSummary[], timerMs: number): string {
+  const data=studySummaryData(progress,modules,timerMs);
+  const cell=(value:string|number) => {
+    let text=String(value);
+    if (typeof value === 'string' && (/^\s*[=+@-]/.test(text) || /^[\t\r\n]/.test(text))) text="'"+text;
+    return '"'+text.replace(/"/g,'""')+'"';
+  };
+  const rows: (string|number)[][]=[['Module','Passed','Score (%)']];
+  for (const item of data.modules) rows.push([item.title,item.passed?'yes':'no',item.score===null?'':Math.round(item.score*100)]);
+  return rows.map(row=>row.map(cell).join(',')).join('\r\n')+'\r\n';
 }

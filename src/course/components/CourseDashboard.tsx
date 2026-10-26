@@ -65,6 +65,7 @@ export function CourseDashboard() {
           <div className="mt-4 flex flex-wrap gap-4 text-sm">
             <button type="button" className="underline underline-offset-4" onClick={() => downloadStudySummary(progress, COURSE_MODULES, activeTimerMs)}>Download study summary</button>
             <button type="button" className="underline underline-offset-4" onClick={() => downloadStudySummary(progress, COURSE_MODULES, activeTimerMs, "json")}>Download JSON</button>
+            <button type="button" className="underline underline-offset-4" onClick={() => downloadStudySummary(progress, COURSE_MODULES, activeTimerMs, "csv")}>Download CSV</button>
           </div>
         ) : null}
 
