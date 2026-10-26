@@ -144,3 +144,7 @@ assert.ok(summary.studySummaryCsv(progress,[{id:'a',title:"-1"}],0).includes("'"
 test("csv-neutralizes-at-formulas", () => {
 assert.ok(summary.studySummaryCsv(progress,[{id:'a',title:"@sum(A1)"}],0).includes("'"+"@sum(A1)"));
 });
+
+test("csv-neutralizes-leading-space-formulas", () => {
+assert.ok(summary.studySummaryCsv(progress,[{id:'a',title:"  =1"}],0).includes("'"+"  =1"));
+});
