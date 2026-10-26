@@ -72,3 +72,7 @@ const p={timerAccumulatedMs:5,timerSessionStartedAt:100};assert.deepEqual(timer.
 test("resume-starts-a-paused-session-at-the-explicit-time", () => {
 const p={timerAccumulatedMs:5,timerSessionStartedAt:null};assert.equal(timer.resumeCourseTimer(p,999).timerSessionStartedAt,999);assert.equal(p.timerSessionStartedAt,null);
 });
+
+test("invalid-resume-times-do-not-mutate-input", () => {
+const p={timerAccumulatedMs:5,timerSessionStartedAt:null};for(const time of [NaN,Infinity,-Infinity])assert.throws(()=>timer.resumeCourseTimer(p,time));assert.equal(p.timerSessionStartedAt,null);
+});
