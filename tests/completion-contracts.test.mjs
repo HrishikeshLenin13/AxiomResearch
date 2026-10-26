@@ -20,3 +20,7 @@ assert.equal(timer.formatDuration(Infinity),'0m 0s');assert.equal(timer.getActiv
 test("duration-formats-subsecond", () => {
 assert.equal(timer.formatDuration(999),"0m 0s");assert.equal(timer.formatDuration(999+0.4),"0m 0s");
 });
+
+test("duration-formats-minute-boundary", () => {
+assert.equal(timer.formatDuration(60000),"1m 0s");assert.equal(timer.formatDuration(60000+0.4),"1m 0s");
+});
