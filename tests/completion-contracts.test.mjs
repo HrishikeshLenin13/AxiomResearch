@@ -108,3 +108,7 @@ const r=summary.studySummaryData({...progress,email:'hidden',volunteerId:'hidden
 test("structured-summary-does-not-export-unknown-module-records", () => {
 const r=summary.studySummaryData({...progress,moduleScores:{secret:{score:1}}},modules,0);assert.ok(!JSON.stringify(r).includes('secret'));assert.equal(r.modules[0].score,null);
 });
+
+test("structured-summary-clamps-elapsed-time", () => {
+assert.equal(summary.studySummaryData(progress,modules,-1).studyTimeMs,0);assert.equal(summary.studySummaryData(progress,modules,Number.MAX_VALUE).studyTimeMs,Number.MAX_SAFE_INTEGER);
+});
