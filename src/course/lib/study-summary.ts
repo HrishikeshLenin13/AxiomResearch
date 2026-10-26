@@ -46,7 +46,7 @@ export function studySummaryCsv(progress: ProgressSummary, modules: readonly Mod
     if (typeof value === 'string' && (/^\s*[=+@-]/.test(text) || /^[\t\r\n]/.test(text))) text="'"+text;
     return '"'+text.replace(/"/g,'""')+'"';
   };
-  const rows: (string|number)[][]=[['Module','Passed','Score (%)']];
-  for (const item of data.modules) rows.push([item.title,item.passed?'yes':'no',item.score===null?'':Math.round(item.score*100)]);
+  const rows: (string|number)[][]=[['Module','Passed','Score (%)','Study time (ms)']];
+  for (const item of data.modules) rows.push([item.title,item.passed?'yes':'no',item.score===null?'':Math.round(item.score*100),data.studyTimeMs]);
   return rows.map(row=>row.map(cell).join(',')).join('\r\n')+'\r\n';
 }
