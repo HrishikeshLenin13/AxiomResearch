@@ -176,3 +176,7 @@ assert.ok(summary.studySummary(progress,modules,0).includes('not a certificate')
 test("statistics-do-not-average-unscored-units-as-zero", () => {
 const s=summary.studySummaryStats(progress,modules);assert.equal(s.scored,1);assert.equal(s.averageScore,.75);assert.equal(s.total,2);
 });
+
+test("empty-statistics-do-not-invent-an-average", () => {
+assert.deepEqual(summary.studySummaryStats(progress,[]),{total:0,passed:0,scored:0,averageScore:null});
+});
