@@ -1,0 +1,10 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import * as timer from '../src/course/lib/course-timer.ts';
+import * as summary from '../src/course/lib/study-summary.ts';
+const progress={completedModuleIds:['a'],moduleScores:{a:{score:.75,passed:true,attempts:2}}};
+const modules=[{id:'a',title:'First'},{id:'b',title:'Second'}];
+
+test("duration-normalizes-negative-time", () => {
+assert.equal(timer.formatDuration(-1),'0m 0s');assert.equal(timer.getActiveTimerMs({timerAccumulatedMs:-1,timerSessionStartedAt:null},100),0);
+});
