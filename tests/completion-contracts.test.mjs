@@ -56,3 +56,7 @@ assert.equal(timer.getActiveTimerMs({timerAccumulatedMs:Number.MAX_SAFE_INTEGER-
 test("paused-timer-does-not-accrue-between-reads", () => {
 const p=timer.pauseCourseTimer({timerAccumulatedMs:0,timerSessionStartedAt:100},150);assert.equal(timer.getActiveTimerMs(p,200),50);assert.equal(timer.getActiveTimerMs(p,1000),50);
 });
+
+test("repeated-pause-does-not-double-count", () => {
+const p=timer.pauseCourseTimer({timerAccumulatedMs:5,timerSessionStartedAt:100},120);assert.deepEqual(timer.pauseCourseTimer(p,200),p);
+});
