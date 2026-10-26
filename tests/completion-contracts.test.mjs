@@ -36,3 +36,7 @@ assert.equal(timer.formatDuration(3661000),"1h 1m 1s");assert.equal(timer.format
 test("active-time-counts-session-plus-accumulation", () => {
 const p={timerAccumulatedMs:25,timerSessionStartedAt:100};assert.equal(timer.getActiveTimerMs(p,150),75);assert.equal(p.timerAccumulatedMs,25);
 });
+
+test("clock-rewind-does-not-subtract-earned-time", () => {
+assert.equal(timer.getActiveTimerMs({timerAccumulatedMs:25,timerSessionStartedAt:100},50),25);
+});
