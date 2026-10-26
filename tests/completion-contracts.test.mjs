@@ -48,3 +48,7 @@ assert.equal(timer.getActiveTimerMs({timerAccumulatedMs:25,timerSessionStartedAt
 test("invalid-start-keeps-accumulated-time", () => {
 for(const value of [NaN,Infinity])assert.equal(timer.getActiveTimerMs({timerAccumulatedMs:25,timerSessionStartedAt:value},500),25);
 });
+
+test("safe-ceiling-applies-after-session-addition", () => {
+assert.equal(timer.getActiveTimerMs({timerAccumulatedMs:Number.MAX_SAFE_INTEGER-1,timerSessionStartedAt:0},5),Number.MAX_SAFE_INTEGER);
+});
