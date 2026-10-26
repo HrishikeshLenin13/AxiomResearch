@@ -60,3 +60,7 @@ const p=timer.pauseCourseTimer({timerAccumulatedMs:0,timerSessionStartedAt:100},
 test("repeated-pause-does-not-double-count", () => {
 const p=timer.pauseCourseTimer({timerAccumulatedMs:5,timerSessionStartedAt:100},120);assert.deepEqual(timer.pauseCourseTimer(p,200),p);
 });
+
+test("pause-preserves-unrelated-progress-metadata", () => {
+const p={timerAccumulatedMs:5,timerSessionStartedAt:100,module:'a'};assert.equal(timer.pauseCourseTimer(p,120).module,'a');assert.equal(p.timerSessionStartedAt,100);
+});
