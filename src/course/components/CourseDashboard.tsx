@@ -62,9 +62,10 @@ export function CourseDashboard() {
         </div>
 
         {progress ? (
-          <button type="button" className="mt-4 text-sm underline underline-offset-4" onClick={() => downloadStudySummary(progress, COURSE_MODULES, activeTimerMs)}>
-            Download study summary
-          </button>
+          <div className="mt-4 flex flex-wrap gap-4 text-sm">
+            <button type="button" className="underline underline-offset-4" onClick={() => downloadStudySummary(progress, COURSE_MODULES, activeTimerMs)}>Download study summary</button>
+            <button type="button" className="underline underline-offset-4" onClick={() => downloadStudySummary(progress, COURSE_MODULES, activeTimerMs, "json")}>Download JSON</button>
+          </div>
         ) : null}
 
         <div className="mt-8 space-y-3">
