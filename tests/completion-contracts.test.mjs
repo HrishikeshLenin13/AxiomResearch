@@ -40,3 +40,7 @@ const p={timerAccumulatedMs:25,timerSessionStartedAt:100};assert.equal(timer.get
 test("clock-rewind-does-not-subtract-earned-time", () => {
 assert.equal(timer.getActiveTimerMs({timerAccumulatedMs:25,timerSessionStartedAt:100},50),25);
 });
+
+test("missing-session-keeps-accumulated-time", () => {
+assert.equal(timer.getActiveTimerMs({timerAccumulatedMs:25,timerSessionStartedAt:null},500),25);
+});
