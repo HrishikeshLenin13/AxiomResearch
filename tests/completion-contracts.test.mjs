@@ -16,3 +16,7 @@ assert.equal(timer.formatDuration(NaN),'0m 0s');assert.equal(timer.getActiveTime
 test("duration-normalizes-infinite-time", () => {
 assert.equal(timer.formatDuration(Infinity),'0m 0s');assert.equal(timer.getActiveTimerMs({timerAccumulatedMs:Infinity,timerSessionStartedAt:null},100),0);
 });
+
+test("duration-formats-subsecond", () => {
+assert.equal(timer.formatDuration(999),"0m 0s");assert.equal(timer.formatDuration(999+0.4),"0m 0s");
+});
