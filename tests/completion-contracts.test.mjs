@@ -8,3 +8,7 @@ const modules=[{id:'a',title:'First'},{id:'b',title:'Second'}];
 test("duration-normalizes-negative-time", () => {
 assert.equal(timer.formatDuration(-1),'0m 0s');assert.equal(timer.getActiveTimerMs({timerAccumulatedMs:-1,timerSessionStartedAt:null},100),0);
 });
+
+test("duration-normalizes-nan-time", () => {
+assert.equal(timer.formatDuration(NaN),'0m 0s');assert.equal(timer.getActiveTimerMs({timerAccumulatedMs:NaN,timerSessionStartedAt:null},100),0);
+});
