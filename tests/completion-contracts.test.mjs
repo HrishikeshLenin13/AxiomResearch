@@ -68,3 +68,7 @@ const p={timerAccumulatedMs:5,timerSessionStartedAt:100,module:'a'};assert.equal
 test("resume-preserves-an-already-active-start", () => {
 const p={timerAccumulatedMs:5,timerSessionStartedAt:100};assert.deepEqual(timer.resumeCourseTimer(p,999),p);assert.notEqual(timer.resumeCourseTimer(p,999),p);
 });
+
+test("resume-starts-a-paused-session-at-the-explicit-time", () => {
+const p={timerAccumulatedMs:5,timerSessionStartedAt:null};assert.equal(timer.resumeCourseTimer(p,999).timerSessionStartedAt,999);assert.equal(p.timerSessionStartedAt,null);
+});
