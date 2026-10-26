@@ -44,3 +44,7 @@ assert.equal(timer.getActiveTimerMs({timerAccumulatedMs:25,timerSessionStartedAt
 test("missing-session-keeps-accumulated-time", () => {
 assert.equal(timer.getActiveTimerMs({timerAccumulatedMs:25,timerSessionStartedAt:null},500),25);
 });
+
+test("invalid-start-keeps-accumulated-time", () => {
+for(const value of [NaN,Infinity])assert.equal(timer.getActiveTimerMs({timerAccumulatedMs:25,timerSessionStartedAt:value},500),25);
+});
