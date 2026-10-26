@@ -96,3 +96,7 @@ const r=summary.studySummaryData({...progress,moduleScores:{a:{score:-2}}},modul
 test("structured-summary-bounds-overfull-scores", () => {
 const r=summary.studySummaryData({...progress,moduleScores:{a:{score:2}}},modules,0);assert.equal(r.modules[0].score,1);
 });
+
+test("structured-summary-does-not-export-nonfinite-scores", () => {
+for(const score of [NaN,Infinity,-Infinity])assert.equal(summary.studySummaryData({...progress,moduleScores:{a:{score}}},modules,0).modules[0].score,null);
+});
