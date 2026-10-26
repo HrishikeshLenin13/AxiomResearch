@@ -88,3 +88,7 @@ const r=summary.studySummaryData({...progress,completedModuleIds:['missing']},mo
 test("structured-summary-retains-course-order", () => {
 const r=summary.studySummaryData(progress,[...modules].reverse(),0);assert.deepEqual(r.modules.map(m=>m.title),['Second','First']);
 });
+
+test("structured-summary-bounds-negative-scores", () => {
+const r=summary.studySummaryData({...progress,moduleScores:{a:{score:-2}}},modules,0);assert.equal(r.modules[0].score,0);assert.equal(r.modules[1].score,null);
+});
