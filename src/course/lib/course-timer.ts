@@ -9,7 +9,7 @@ export function getActiveTimerMs(progress: TimerProgress, now = Date.now()) {
   const started = progress.timerSessionStartedAt;
   const sessionMs = started !== null && Number.isFinite(started) && Number.isFinite(now)
     ? Math.max(0, now - started) : 0;
-  return nonNegativeMs(progress.timerAccumulatedMs) + sessionMs;
+  return Math.min(Number.MAX_SAFE_INTEGER, nonNegativeMs(progress.timerAccumulatedMs) + sessionMs);
 }
 
 export function formatDuration(ms: number) {
