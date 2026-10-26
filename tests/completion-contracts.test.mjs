@@ -32,3 +32,7 @@ assert.equal(timer.formatDuration(3600000),"1h 0m 0s");assert.equal(timer.format
 test("duration-formats-mixed-units", () => {
 assert.equal(timer.formatDuration(3661000),"1h 1m 1s");assert.equal(timer.formatDuration(3661000+0.4),"1h 1m 1s");
 });
+
+test("active-time-counts-session-plus-accumulation", () => {
+const p={timerAccumulatedMs:25,timerSessionStartedAt:100};assert.equal(timer.getActiveTimerMs(p,150),75);assert.equal(p.timerAccumulatedMs,25);
+});
