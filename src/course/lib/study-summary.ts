@@ -10,7 +10,8 @@ export function studySummary(progress: ProgressSummary, modules: readonly Module
   const completed = new Set(Array.isArray(progress.completedModuleIds) ? progress.completedModuleIds : []);
   const scores = progress.moduleScores && typeof progress.moduleScores === "object" ? progress.moduleScores : {};
   const passed = modules.filter(module => completed.has(module.id)).length;
-  const lines = ['Axiom study summary', `Units passed: ${passed}/${modules.length}`, `Study time: ${formatDuration(timerMs)}`, ''];
+  const stats = studySummaryStats(progress, modules);
+  const lines = ['Axiom study summary', `Units passed: ${passed}/${modules.length}`, `Study time: ${formatDuration(timerMs)}`, `Average recorded score: ${stats.averageScore === null ? 'not available' : Math.round(stats.averageScore * 100) + '%'}`, ''];
   for (const module of modules) {
     const record = scores[module.id];
     const score = record && Number.isFinite(record.score) ? ` — ${Math.round(Math.min(1, Math.max(0, record.score)) * 100)}%` : '';
@@ -58,4 +59,12 @@ export function studySummaryMarkdown(progress: ProgressSummary, modules: readonl
   const title = (text: string) => String(text).replace(/[\r\n]+/g, ' ').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\\|`*_\[\]]/g, '\\$&');
   const rows = data.modules.map(item => `| ${title(item.title)} | ${item.passed ? 'yes' : 'no'} | ${item.score === null ? '—' : Math.round(item.score * 100) + '%'} |`);
   return ['# Axiom study summary', '', `Study time: ${formatDuration(data.studyTimeMs)}`, '', '| Module | Passed | Score |', '| --- | --- | --- |', ...rows, '', 'Personal study record only; not a certificate.', ''].join('\n');
+}
+
+/** Known-module aggregate only; an empty score set has no average. */
+export function studySummaryStats(progress: ProgressSummary, modules: readonly ModuleSummary[]) {
+  const data = studySummaryData(progress, modules, 0);
+  const scored = data.modules.flatMap(item => item.score === null ? [] : [item.score]);
+  return {total:data.modules.length, passed:data.modules.filter(item => item.passed).length,
+    scored:scored.length, averageScore:scored.length ? scored.reduce((sum, score) => sum + score, 0) / scored.length : null};
 }
