@@ -39,3 +39,7 @@ Run from the repository root:
 npm test && npm run typecheck
 ```
 
+
+## Summary extensions
+
+Markdown downloads escape table text and HTML. CSV includes elapsed study milliseconds; text includes the mean of recorded scores for known modules only. Unscored modules do not become zeroes. Displayed durations share the safe accumulated-time ceiling. Pause and resume both reject nonfinite timestamps without mutating progress.
