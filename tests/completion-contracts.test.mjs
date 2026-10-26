@@ -116,3 +116,7 @@ assert.equal(summary.studySummaryData(progress,modules,-1).studyTimeMs,0);assert
 test("structured-summary-recovers-null-saved-collections", () => {
 const r=summary.studySummaryData({completedModuleIds:null,moduleScores:null},modules,0);assert.ok(r.modules.every(m=>!m.passed&&m.score===null));
 });
+
+test("json-round-trip-keeps-only-serializable-study-data", () => {
+const r=summary.studySummaryData(progress,modules,55);assert.deepEqual(JSON.parse(JSON.stringify(r)),r);assert.equal(r.schemaVersion,1);
+});
