@@ -28,3 +28,7 @@ assert.equal(timer.formatDuration(60000),"1m 0s");assert.equal(timer.formatDurat
 test("duration-formats-hour-boundary", () => {
 assert.equal(timer.formatDuration(3600000),"1h 0m 0s");assert.equal(timer.formatDuration(3600000+0.4),"1h 0m 0s");
 });
+
+test("duration-formats-mixed-units", () => {
+assert.equal(timer.formatDuration(3661000),"1h 1m 1s");assert.equal(timer.formatDuration(3661000+0.4),"1h 1m 1s");
+});
