@@ -12,3 +12,7 @@ assert.equal(timer.formatDuration(-1),'0m 0s');assert.equal(timer.getActiveTimer
 test("duration-normalizes-nan-time", () => {
 assert.equal(timer.formatDuration(NaN),'0m 0s');assert.equal(timer.getActiveTimerMs({timerAccumulatedMs:NaN,timerSessionStartedAt:null},100),0);
 });
+
+test("duration-normalizes-infinite-time", () => {
+assert.equal(timer.formatDuration(Infinity),'0m 0s');assert.equal(timer.getActiveTimerMs({timerAccumulatedMs:Infinity,timerSessionStartedAt:null},100),0);
+});
