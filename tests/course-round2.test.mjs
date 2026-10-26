@@ -9,3 +9,25 @@ test('malformed saved progress and multiline titles remain exportable', () => { 
 test('timer accumulation remains finite and safely representable', () => { assert.equal(timer.getActiveTimerMs({timerAccumulatedMs:Number.MAX_VALUE,timerSessionStartedAt:0},Number.MAX_VALUE),Number.MAX_SAFE_INTEGER); });
 test('pause and resume preserve elapsed time without mutating progress', () => { const original={timerAccumulatedMs:10,timerSessionStartedAt:100,tag:'kept'}; const paused=timer.pauseCourseTimer(original,150); assert.equal(paused.timerAccumulatedMs,60); assert.equal(original.timerAccumulatedMs,10); const running=timer.resumeCourseTimer(paused,200); assert.equal(timer.getActiveTimerMs(running,250),110); assert.equal(timer.resumeCourseTimer(running,300).timerSessionStartedAt,200); });
 test('CSV quotes titles and neutralizes formula-like text', () => { const csv=summary.studySummaryCsv(progress,[{id:'a',title:'=SUM(A1)'},{id:'b',title:'A, "B"'}],0); assert.ok(csv.includes("'"+'=SUM(A1)')); assert.ok(csv.includes('A, ""B""')); assert.equal(csv.split('\r\n').length,4); });
+
+test('generated pause/resume cycles conserve active time and exports remain allowlisted', () => {
+  for(let count=0;count<=60;count++) {
+    let state={timerAccumulatedMs:0,timerSessionStartedAt:null,email:'private',accessCodeUsed:'secret'};
+    let expected=0;
+    for(let step=0;step<count;step++) {
+      const start=1000+step*100;
+      state=timer.resumeCourseTimer(state,start);
+      expected+=step+1;
+      state=timer.pauseCourseTimer(state,start+step+1);
+      assert.equal(state.timerAccumulatedMs,expected);
+      assert.deepEqual(timer.pauseCourseTimer(state,start+90),state);
+    }
+    const data=summary.studySummaryData({...progress,...state},modules,expected);
+    assert.deepEqual(Object.keys(data),['schemaVersion','studyTimeMs','modules']);
+    assert.equal(data.studyTimeMs,expected);
+    for(const item of data.modules) assert.deepEqual(Object.keys(item),['title','passed','score']);
+    for(const payload of [JSON.stringify(data),summary.studySummaryCsv({...progress,...state},modules,expected)]) {
+      assert.ok(!payload.includes('private'));assert.ok(!payload.includes('secret'));
+    }
+  }
+});
