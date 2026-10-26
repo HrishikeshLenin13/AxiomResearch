@@ -152,3 +152,7 @@ assert.ok(summary.studySummaryCsv(progress,[{id:'a',title:"  =1"}],0).includes("
 test("csv-includes-elapsed-time-on-each-module-row", () => {
 const rows=summary.studySummaryCsv(progress,modules,321).trim().split('\r\n');assert.equal(rows.length,3);assert.ok(rows.slice(1).every(row=>row.endsWith('"321"')));
 });
+
+test("csv-empty-course-retains-a-header", () => {
+const csv=summary.studySummaryCsv(progress,[],0);assert.equal(csv.trim().split('\r\n').length,1);assert.ok(csv.includes('Module'));
+});
