@@ -168,3 +168,7 @@ const md=summary.studySummaryMarkdown(progress,[{id:'a',title:'A\nB'}],0);assert
 test("text-summary-distinguishes-pending-and-passed-units", () => {
 const text=summary.studySummary(progress,modules,0);assert.ok(text.includes('[passed] First'));assert.ok(text.includes('[pending] Second'));
 });
+
+test("text-summary-is-explicitly-not-a-certificate", () => {
+assert.ok(summary.studySummary(progress,modules,0).includes('not a certificate'));assert.ok(summary.studySummaryMarkdown(progress,modules,0).includes('not a certificate'));
+});
