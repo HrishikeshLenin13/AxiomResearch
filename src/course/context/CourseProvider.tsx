@@ -166,9 +166,10 @@ export function CourseProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
     setLoading(true);
 
+    const volunteerId = identity.volunteerId;
     async function hydrateVolunteer() {
       try {
-        const result = await resumeVolunteerById(identity.volunteerId);
+        const result = await resumeVolunteerById(volunteerId);
         if (cancelled) return;
         if (!result.ok) {
           clearVolunteerIdentity();
@@ -247,6 +248,7 @@ export function CourseProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!volunteer) return;
+    const volunteerId = volunteer.volunteerId;
 
     function handleUnload() {
       const current = progressRef.current;
@@ -257,7 +259,7 @@ export function CourseProvider({ children }: { children: ReactNode }) {
         timerSessionStartedAt: null,
       });
       writeLocalVolunteerProgress(next);
-      void saveCourseProgress(next.volunteerId || volunteer.volunteerId, next);
+      void saveCourseProgress(next.volunteerId || volunteerId, next);
       syncProgress("signout", next, getActiveTimerMs(next));
     }
 
