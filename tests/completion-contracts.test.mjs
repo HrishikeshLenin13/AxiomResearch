@@ -120,3 +120,7 @@ const r=summary.studySummaryData({completedModuleIds:null,moduleScores:null},mod
 test("json-round-trip-keeps-only-serializable-study-data", () => {
 const r=summary.studySummaryData(progress,modules,55);assert.deepEqual(JSON.parse(JSON.stringify(r)),r);assert.equal(r.schemaVersion,1);
 });
+
+test("csv-escapes-embedded-double-quotes", () => {
+assert.ok(summary.studySummaryCsv(progress,[{id:'a',title:'A "quote"'}],0).includes('A ""quote""'));
+});
