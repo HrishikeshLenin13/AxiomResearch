@@ -19,10 +19,10 @@ export function studySummary(progress: ProgressSummary, modules: readonly Module
   lines.push('', 'Personal study record only; not a certificate or independently verified service-hours record.');
   return lines.join('\n') + '\n';
 }
-export function downloadStudySummary(progress: ProgressSummary, modules: readonly ModuleSummary[], timerMs: number, format: "text" | "json" | "csv" = "text") {
-  const payload = format === "csv" ? studySummaryCsv(progress,modules,timerMs) : format === "json" ? JSON.stringify(studySummaryData(progress,modules,timerMs), null, 2) + "\n" : studySummary(progress,modules,timerMs);
-  const url = URL.createObjectURL(new Blob([payload], {type:format === 'csv' ? 'text/csv;charset=utf-8' : format === 'json' ? 'application/json' : 'text/plain;charset=utf-8'}));
-  const link = document.createElement('a');link.href=url;link.download=format === 'csv' ? 'axiom-study-summary.csv' : format === 'json' ? 'axiom-study-summary.json' : 'axiom-study-summary.txt';
+export function downloadStudySummary(progress: ProgressSummary, modules: readonly ModuleSummary[], timerMs: number, format: "text" | "json" | "csv" | "markdown" = "text") {
+  const payload = format === "markdown" ? studySummaryMarkdown(progress, modules, timerMs) : format === "csv" ? studySummaryCsv(progress,modules,timerMs) : format === "json" ? JSON.stringify(studySummaryData(progress,modules,timerMs), null, 2) + "\n" : studySummary(progress,modules,timerMs);
+  const url = URL.createObjectURL(new Blob([payload], {type:format === 'markdown' ? 'text/markdown;charset=utf-8' : format === 'csv' ? 'text/csv;charset=utf-8' : format === 'json' ? 'application/json' : 'text/plain;charset=utf-8'}));
+  const link = document.createElement('a');link.href=url;link.download=format === 'markdown' ? 'axiom-study-summary.md' : format === 'csv' ? 'axiom-study-summary.csv' : format === 'json' ? 'axiom-study-summary.json' : 'axiom-study-summary.txt';
   document.body.append(link);link.click();link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
@@ -49,4 +49,13 @@ export function studySummaryCsv(progress: ProgressSummary, modules: readonly Mod
   const rows: (string|number)[][]=[['Module','Passed','Score (%)','Study time (ms)']];
   for (const item of data.modules) rows.push([item.title,item.passed?'yes':'no',item.score===null?'':Math.round(item.score*100),data.studyTimeMs]);
   return rows.map(row=>row.map(cell).join(',')).join('\r\n')+'\r\n';
+}
+
+
+/** Escape titles as table text; never embed participant/account metadata. */
+export function studySummaryMarkdown(progress: ProgressSummary, modules: readonly ModuleSummary[], timerMs: number): string {
+  const data = studySummaryData(progress, modules, timerMs);
+  const title = (text: string) => String(text).replace(/[\r\n]+/g, ' ').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\\|`*_\[\]]/g, '\\$&');
+  const rows = data.modules.map(item => `| ${title(item.title)} | ${item.passed ? 'yes' : 'no'} | ${item.score === null ? '—' : Math.round(item.score * 100) + '%'} |`);
+  return ['# Axiom study summary', '', `Study time: ${formatDuration(data.studyTimeMs)}`, '', '| Module | Passed | Score |', '| --- | --- | --- |', ...rows, '', 'Personal study record only; not a certificate.', ''].join('\n');
 }
