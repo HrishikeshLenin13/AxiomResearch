@@ -156,3 +156,7 @@ This project is currently maintained as the core website for Axiom Research.
 Choose **Download study summary** on the course dashboard to save a text record of known modules, recorded quiz percentages, and elapsed study time. The export explicitly excludes email addresses, volunteer identifiers, and access codes. It is generated locally and does not modify saved progress or submit the course.
 
 The summary is a personal study aid, not a completion certificate or a verified service-hours record. `npm test` covers its data allowlist and timer behavior. Install from the checked-in lockfile with `npm ci`; use `npm run build:dev` for a configuration-independent build check.
+
+## Developer resources
+
+- [Feature usage and API contracts](docs/RECENT_IMPROVEMENTS.md)
