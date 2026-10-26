@@ -52,3 +52,7 @@ for(const value of [NaN,Infinity])assert.equal(timer.getActiveTimerMs({timerAccu
 test("safe-ceiling-applies-after-session-addition", () => {
 assert.equal(timer.getActiveTimerMs({timerAccumulatedMs:Number.MAX_SAFE_INTEGER-1,timerSessionStartedAt:0},5),Number.MAX_SAFE_INTEGER);
 });
+
+test("paused-timer-does-not-accrue-between-reads", () => {
+const p=timer.pauseCourseTimer({timerAccumulatedMs:0,timerSessionStartedAt:100},150);assert.equal(timer.getActiveTimerMs(p,200),50);assert.equal(timer.getActiveTimerMs(p,1000),50);
+});
