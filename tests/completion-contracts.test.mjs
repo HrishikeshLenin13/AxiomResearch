@@ -164,3 +164,7 @@ const md=summary.studySummaryMarkdown(progress,[{id:'a',title:'<b>A|B</b>'}],0);
 test("markdown-flattens-multiline-course-titles", () => {
 const md=summary.studySummaryMarkdown(progress,[{id:'a',title:'A\nB'}],0);assert.ok(md.includes('A B'));assert.ok(!md.includes('| A\nB'));
 });
+
+test("text-summary-distinguishes-pending-and-passed-units", () => {
+const text=summary.studySummary(progress,modules,0);assert.ok(text.includes('[passed] First'));assert.ok(text.includes('[pending] Second'));
+});
