@@ -112,3 +112,7 @@ const r=summary.studySummaryData({...progress,moduleScores:{secret:{score:1}}},m
 test("structured-summary-clamps-elapsed-time", () => {
 assert.equal(summary.studySummaryData(progress,modules,-1).studyTimeMs,0);assert.equal(summary.studySummaryData(progress,modules,Number.MAX_VALUE).studyTimeMs,Number.MAX_SAFE_INTEGER);
 });
+
+test("structured-summary-recovers-null-saved-collections", () => {
+const r=summary.studySummaryData({completedModuleIds:null,moduleScores:null},modules,0);assert.ok(r.modules.every(m=>!m.passed&&m.score===null));
+});
