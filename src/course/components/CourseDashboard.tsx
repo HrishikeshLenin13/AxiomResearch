@@ -1,3 +1,4 @@
+import { downloadStudySummary } from "../lib/study-summary";
 import { Link } from "@tanstack/react-router";
 import { Lock, Play } from "lucide-react";
 import {
@@ -12,7 +13,7 @@ import { CourseHeader } from "./CourseHeader";
 import { CourseProgressBar } from "./CourseProgressBar";
 
 export function CourseDashboard() {
-  const { user, volunteer, progress, resetCourseProgress, submitCourse, sheetsWarning } = useCourse();
+  const { user, volunteer, progress, activeTimerMs, resetCourseProgress, submitCourse, sheetsWarning } = useCourse();
   const completed = progress?.completedModuleIds ?? [];
   const total = COURSE_MODULES.length;
   const firstName = volunteer?.firstName ?? user?.displayName?.split(" ")[0] ?? "Student";
@@ -59,6 +60,12 @@ export function CourseDashboard() {
           </div>
           <CourseProgressBar value={modulesPassed + (finalPassed ? 1 : 0)} max={total + 1} />
         </div>
+
+        {progress ? (
+          <button type="button" className="mt-4 text-sm underline underline-offset-4" onClick={() => downloadStudySummary(progress, COURSE_MODULES, activeTimerMs)}>
+            Download study summary
+          </button>
+        ) : null}
 
         <div className="mt-8 space-y-3">
           {COURSE_MODULES.map((module) => {
