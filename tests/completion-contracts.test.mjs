@@ -76,3 +76,7 @@ const p={timerAccumulatedMs:5,timerSessionStartedAt:null};assert.equal(timer.res
 test("invalid-resume-times-do-not-mutate-input", () => {
 const p={timerAccumulatedMs:5,timerSessionStartedAt:null};for(const time of [NaN,Infinity,-Infinity])assert.throws(()=>timer.resumeCourseTimer(p,time));assert.equal(p.timerSessionStartedAt,null);
 });
+
+test("invalid-pause-times-do-not-clear-a-session", () => {
+const p={timerAccumulatedMs:5,timerSessionStartedAt:10};for(const time of [NaN,Infinity,-Infinity])assert.throws(()=>timer.pauseCourseTimer(p,time));assert.equal(p.timerSessionStartedAt,10);
+});
