@@ -185,4 +185,4 @@ export async function listRemoteCourseProgress(): Promise<CourseProgressDoc[]> {
     .filter((doc) => Boolean(doc.volunteerId));
 }
 
-export { getActiveTimerMs, formatDuration } from "./course-timer";
+export { getActiveTimerMs, formatDuration, pauseCourseTimer, resumeCourseTimer } from "./course-timer";

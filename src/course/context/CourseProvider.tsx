@@ -23,6 +23,7 @@ import { COURSE_PREVIEW_MODE } from "../lib/preview";
 import {
   emptyCourseProgress,
   getActiveTimerMs,
+  pauseCourseTimer,
   loadCourseProgress,
   normalizeCourseProgress,
   saveCourseProgress,
@@ -253,11 +254,7 @@ export function CourseProvider({ children }: { children: ReactNode }) {
     function handleUnload() {
       const current = progressRef.current;
       if (!current?.timerSessionStartedAt) return;
-      const next: CourseProgressDoc = applyProgressDerivedFields({
-        ...current,
-        timerAccumulatedMs: getActiveTimerMs(current),
-        timerSessionStartedAt: null,
-      });
+      const next: CourseProgressDoc = applyProgressDerivedFields(pauseCourseTimer(current));
       writeLocalVolunteerProgress(next);
       void saveCourseProgress(next.volunteerId || volunteerId, next);
       syncProgress("signout", next, getActiveTimerMs(next));
@@ -334,11 +331,7 @@ export function CourseProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(async () => {
     const current = progressRef.current;
     if (current && (volunteer || user)) {
-      const next: CourseProgressDoc = applyProgressDerivedFields({
-        ...current,
-        timerAccumulatedMs: getActiveTimerMs(current),
-        timerSessionStartedAt: null,
-      });
+      const next: CourseProgressDoc = applyProgressDerivedFields(pauseCourseTimer(current));
       if (next.volunteerId) {
         writeLocalVolunteerProgress(next);
         await saveCourseProgress(next.volunteerId, next);

@@ -22,3 +22,13 @@ export function formatDuration(ms: number) {
   }
   return `${minutes}m ${seconds}s`;
 }
+
+/** Snapshot elapsed time once; retaining other progress fields is intentional. */
+export function pauseCourseTimer<T extends TimerProgress>(progress: T, now = Date.now()) {
+  return {...progress, timerAccumulatedMs:getActiveTimerMs(progress,now), timerSessionStartedAt:null};
+}
+export function resumeCourseTimer<T extends TimerProgress>(progress: T, now = Date.now()) {
+  if (!Number.isFinite(now)) throw new RangeError("Use a finite session timestamp.");
+  if (progress.timerSessionStartedAt !== null && Number.isFinite(progress.timerSessionStartedAt)) return {...progress};
+  return {...progress,timerSessionStartedAt:now};
+}
