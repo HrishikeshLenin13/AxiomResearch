@@ -50,3 +50,7 @@ const p={completedModuleIds:[],moduleScores:{}};const ms=86400000;assert.equal(t
 test("elapsed-export-day-second", () => {
 const p={completedModuleIds:[],moduleScores:{}};const ms=86401000;assert.equal(timer.formatDuration(ms),"24h 0m 1s");assert.ok(summary.studySummary(p,[],ms).includes("Study time: 24h 0m 1s"));assert.ok(summary.studySummaryMarkdown(p,[],ms).includes("Study time: 24h 0m 1s"));assert.equal(summary.studySummaryData(p,[],ms).studyTimeMs,ms);
 });
+
+test("elapsed-export-fractional", () => {
+const p={completedModuleIds:[],moduleScores:{}};const ms=12345.9;assert.equal(timer.formatDuration(ms),"0m 12s");assert.ok(summary.studySummary(p,[],ms).includes("Study time: 0m 12s"));assert.ok(summary.studySummaryMarkdown(p,[],ms).includes("Study time: 0m 12s"));assert.equal(summary.studySummaryData(p,[],ms).studyTimeMs,ms);
+});
