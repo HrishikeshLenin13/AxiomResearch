@@ -258,3 +258,7 @@ const p={completedModuleIds:[],moduleScores:{a:{score:1,passed:false,attempts:1}
 test("known-score-stats-quarter", () => {
 const p={completedModuleIds:[],moduleScores:{a:{score:.25,passed:false,attempts:1},unknown:{score:1}}};const ms=[{id:'a',title:'A'}];const stats=summary.studySummaryStats(p,ms);assert.equal(stats.scored,1);assert.equal(stats.averageScore,0.25);assert.equal(summary.studySummaryData(p,ms,0).modules[0].score,0.25);
 });
+
+test("known-score-stats-half", () => {
+const p={completedModuleIds:[],moduleScores:{a:{score:.5,passed:false,attempts:1},unknown:{score:1}}};const ms=[{id:'a',title:'A'}];const stats=summary.studySummaryStats(p,ms);assert.equal(stats.scored,1);assert.equal(stats.averageScore,0.5);assert.equal(summary.studySummaryData(p,ms,0).modules[0].score,0.5);
+});
