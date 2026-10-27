@@ -242,3 +242,7 @@ const p={timerAccumulatedMs:9007199254740990,timerSessionStartedAt:0,metadata:{k
 test("pause-resume-contract-future", () => {
 const p={timerAccumulatedMs:200,timerSessionStartedAt:1000,metadata:{keep:true}};const copy={...p};const before=timer.getActiveTimerMs(p,10);const paused=timer.pauseCourseTimer(p,10);assert.equal(paused.timerAccumulatedMs,before);assert.equal(paused.timerSessionStartedAt,null);assert.deepEqual(p,copy);const resumed=timer.resumeCourseTimer(paused,10);assert.equal(timer.getActiveTimerMs(resumed,10),before);assert.deepEqual(timer.pauseCourseTimer(paused,10),paused);
 });
+
+test("pause-resume-contract-resumed", () => {
+const p={timerAccumulatedMs:1,timerSessionStartedAt:null,metadata:{keep:true}};const copy={...p};const before=timer.getActiveTimerMs(p,0);const paused=timer.pauseCourseTimer(p,0);assert.equal(paused.timerAccumulatedMs,before);assert.equal(paused.timerSessionStartedAt,null);assert.deepEqual(p,copy);const resumed=timer.resumeCourseTimer(paused,0);assert.equal(timer.getActiveTimerMs(resumed,0),before);assert.deepEqual(timer.pauseCourseTimer(paused,0),paused);
+});
