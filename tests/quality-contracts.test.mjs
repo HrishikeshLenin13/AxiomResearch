@@ -66,3 +66,7 @@ const p={completedModuleIds:[],moduleScores:{}};const ms=604800000;assert.equal(
 test("elapsed-export-safe-limit", () => {
 const p={completedModuleIds:[],moduleScores:{}};const ms=9007199254740991;assert.equal(timer.formatDuration(ms),"2501999792h 59m 0s");assert.ok(summary.studySummary(p,[],ms).includes("Study time: 2501999792h 59m 0s"));assert.ok(summary.studySummaryMarkdown(p,[],ms).includes("Study time: 2501999792h 59m 0s"));assert.equal(summary.studySummaryData(p,[],ms).studyTimeMs,ms);
 });
+
+test("csv-roundtrip-comma", () => {
+const ms=[{id:'known',title:"A, B"}];const p={completedModuleIds:['known'],moduleScores:{known:{score:.875,passed:true,attempts:1}}};const rows=csvRows(summary.studySummaryCsv(p,ms,1234));assert.deepEqual(rows[1],["A, B",'yes','88','1234']);assert.equal(rows.length,2);
+});
