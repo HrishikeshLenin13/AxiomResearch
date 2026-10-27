@@ -246,3 +246,7 @@ const p={timerAccumulatedMs:200,timerSessionStartedAt:1000,metadata:{keep:true}}
 test("pause-resume-contract-resumed", () => {
 const p={timerAccumulatedMs:1,timerSessionStartedAt:null,metadata:{keep:true}};const copy={...p};const before=timer.getActiveTimerMs(p,0);const paused=timer.pauseCourseTimer(p,0);assert.equal(paused.timerAccumulatedMs,before);assert.equal(paused.timerSessionStartedAt,null);assert.deepEqual(p,copy);const resumed=timer.resumeCourseTimer(paused,0);assert.equal(timer.getActiveTimerMs(resumed,0),before);assert.deepEqual(timer.pauseCourseTimer(paused,0),paused);
 });
+
+test("known-score-stats-zero", () => {
+const p={completedModuleIds:[],moduleScores:{a:{score:0,passed:false,attempts:1},unknown:{score:1}}};const ms=[{id:'a',title:'A'}];const stats=summary.studySummaryStats(p,ms);assert.equal(stats.scored,1);assert.equal(stats.averageScore,0);assert.equal(summary.studySummaryData(p,ms,0).modules[0].score,0);
+});
