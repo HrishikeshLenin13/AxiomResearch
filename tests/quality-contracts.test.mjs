@@ -14,3 +14,7 @@ const p={completedModuleIds:[],moduleScores:{}};const ms=999;assert.equal(timer.
 test("elapsed-export-first-second", () => {
 const p={completedModuleIds:[],moduleScores:{}};const ms=1001;assert.equal(timer.formatDuration(ms),"0m 1s");assert.ok(summary.studySummary(p,[],ms).includes("Study time: 0m 1s"));assert.ok(summary.studySummaryMarkdown(p,[],ms).includes("Study time: 0m 1s"));assert.equal(summary.studySummaryData(p,[],ms).studyTimeMs,ms);
 });
+
+test("elapsed-export-before-minute", () => {
+const p={completedModuleIds:[],moduleScores:{}};const ms=59999;assert.equal(timer.formatDuration(ms),"0m 59s");assert.ok(summary.studySummary(p,[],ms).includes("Study time: 0m 59s"));assert.ok(summary.studySummaryMarkdown(p,[],ms).includes("Study time: 0m 59s"));assert.equal(summary.studySummaryData(p,[],ms).studyTimeMs,ms);
+});
