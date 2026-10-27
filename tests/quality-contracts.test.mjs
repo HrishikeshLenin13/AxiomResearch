@@ -302,3 +302,7 @@ const p={completedModuleIds:[],moduleScores:{a:{score:null,passed:false,attempts
 test("known-score-stats-undefined", () => {
 const p={completedModuleIds:[],moduleScores:{a:{score:undefined,passed:false,attempts:1},unknown:{score:1}}};const ms=[{id:'a',title:'A'}];const stats=summary.studySummaryStats(p,ms);assert.equal(stats.scored,0);assert.equal(stats.averageScore,null);assert.equal(summary.studySummaryData(p,ms,0).modules[0].score,null);
 });
+
+test("known-score-stats-rounding", () => {
+const p={completedModuleIds:[],moduleScores:{a:{score:.995,passed:false,attempts:1},unknown:{score:1}}};const ms=[{id:'a',title:'A'}];const stats=summary.studySummaryStats(p,ms);assert.equal(stats.scored,1);assert.equal(stats.averageScore,0.995);assert.equal(summary.studySummaryData(p,ms,0).modules[0].score,0.995);
+});
