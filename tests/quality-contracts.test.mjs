@@ -126,3 +126,7 @@ const ms=[{id:'known',title:"A\\B"}];const p={completedModuleIds:['known'],modul
 test("csv-roundtrip-html", () => {
 const ms=[{id:'known',title:"<script>title</script>"}];const p={completedModuleIds:['known'],moduleScores:{known:{score:.875,passed:true,attempts:1}}};const rows=csvRows(summary.studySummaryCsv(p,ms,1234));assert.deepEqual(rows[1],["<script>title</script>",'yes','88','1234']);assert.equal(rows.length,2);
 });
+
+test("structured-title-comma", () => {
+const input={completedModuleIds:['known','stale'],moduleScores:{known:{score:.25,passed:true,attempts:1},stale:{score:1}},account:'secret'};const ms=[{id:'known',title:"A, B"}];const data=summary.studySummaryData(input,ms,1000);assert.deepEqual(data.modules,[{title:"A, B",passed:true,score:.25}]);assert.equal(JSON.stringify(data).includes('secret'),false);assert.equal(summary.studySummaryStats(input,ms).total,1);assert.equal(input.completedModuleIds.length,2);
+});
