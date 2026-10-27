@@ -90,3 +90,7 @@ const ms=[{id:'known',title:"Caf\u00e9 \u5b66\u7fd2 \ud83d\udcda"}];const p={com
 test("csv-roundtrip-formula", () => {
 const ms=[{id:'known',title:"=SUM(A1:A2)"}];const p={completedModuleIds:['known'],moduleScores:{known:{score:.875,passed:true,attempts:1}}};const rows=csvRows(summary.studySummaryCsv(p,ms,1234));assert.deepEqual(rows[1],["'=SUM(A1:A2)",'yes','88','1234']);assert.equal(rows.length,2);
 });
+
+test("csv-roundtrip-plus", () => {
+const ms=[{id:'known',title:"+2+3"}];const p={completedModuleIds:['known'],moduleScores:{known:{score:.875,passed:true,attempts:1}}};const rows=csvRows(summary.studySummaryCsv(p,ms,1234));assert.deepEqual(rows[1],["'+2+3",'yes','88','1234']);assert.equal(rows.length,2);
+});
