@@ -82,3 +82,7 @@ const ms=[{id:'known',title:"A\r\nB"}];const p={completedModuleIds:['known'],mod
 test("csv-roundtrip-tab", () => {
 const ms=[{id:'known',title:"A\tB"}];const p={completedModuleIds:['known'],moduleScores:{known:{score:.875,passed:true,attempts:1}}};const rows=csvRows(summary.studySummaryCsv(p,ms,1234));assert.deepEqual(rows[1],["A\tB",'yes','88','1234']);assert.equal(rows.length,2);
 });
+
+test("csv-roundtrip-unicode", () => {
+const ms=[{id:'known',title:"Caf\u00e9 \u5b66\u7fd2 \ud83d\udcda"}];const p={completedModuleIds:['known'],moduleScores:{known:{score:.875,passed:true,attempts:1}}};const rows=csvRows(summary.studySummaryCsv(p,ms,1234));assert.deepEqual(rows[1],["Caf\u00e9 \u5b66\u7fd2 \ud83d\udcda",'yes','88','1234']);assert.equal(rows.length,2);
+});
