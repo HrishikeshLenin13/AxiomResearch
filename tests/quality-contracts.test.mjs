@@ -34,3 +34,7 @@ const p={completedModuleIds:[],moduleScores:{}};const ms=3599999;assert.equal(ti
 test("elapsed-export-hour", () => {
 const p={completedModuleIds:[],moduleScores:{}};const ms=3600000;assert.equal(timer.formatDuration(ms),"1h 0m 0s");assert.ok(summary.studySummary(p,[],ms).includes("Study time: 1h 0m 0s"));assert.ok(summary.studySummaryMarkdown(p,[],ms).includes("Study time: 1h 0m 0s"));assert.equal(summary.studySummaryData(p,[],ms).studyTimeMs,ms);
 });
+
+test("elapsed-export-hour-second", () => {
+const p={completedModuleIds:[],moduleScores:{}};const ms=3601000;assert.equal(timer.formatDuration(ms),"1h 0m 1s");assert.ok(summary.studySummary(p,[],ms).includes("Study time: 1h 0m 1s"));assert.ok(summary.studySummaryMarkdown(p,[],ms).includes("Study time: 1h 0m 1s"));assert.equal(summary.studySummaryData(p,[],ms).studyTimeMs,ms);
+});
