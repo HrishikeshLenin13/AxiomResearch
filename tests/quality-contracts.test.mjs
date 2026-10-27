@@ -70,3 +70,7 @@ const p={completedModuleIds:[],moduleScores:{}};const ms=9007199254740991;assert
 test("csv-roundtrip-comma", () => {
 const ms=[{id:'known',title:"A, B"}];const p={completedModuleIds:['known'],moduleScores:{known:{score:.875,passed:true,attempts:1}}};const rows=csvRows(summary.studySummaryCsv(p,ms,1234));assert.deepEqual(rows[1],["A, B",'yes','88','1234']);assert.equal(rows.length,2);
 });
+
+test("csv-roundtrip-quote", () => {
+const ms=[{id:'known',title:"A \"B\""}];const p={completedModuleIds:['known'],moduleScores:{known:{score:.875,passed:true,attempts:1}}};const rows=csvRows(summary.studySummaryCsv(p,ms,1234));assert.deepEqual(rows[1],["A \"B\"",'yes','88','1234']);assert.equal(rows.length,2);
+});
