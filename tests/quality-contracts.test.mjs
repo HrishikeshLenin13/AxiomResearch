@@ -138,3 +138,7 @@ const input={completedModuleIds:['known','stale'],moduleScores:{known:{score:.25
 test("structured-title-crlf", () => {
 const input={completedModuleIds:['known','stale'],moduleScores:{known:{score:.25,passed:true,attempts:1},stale:{score:1}},account:'secret'};const ms=[{id:'known',title:"A\r\nB"}];const data=summary.studySummaryData(input,ms,1000);assert.deepEqual(data.modules,[{title:"A\r\nB",passed:true,score:.25}]);assert.equal(JSON.stringify(data).includes('secret'),false);assert.equal(summary.studySummaryStats(input,ms).total,1);assert.equal(input.completedModuleIds.length,2);
 });
+
+test("structured-title-tab", () => {
+const input={completedModuleIds:['known','stale'],moduleScores:{known:{score:.25,passed:true,attempts:1},stale:{score:1}},account:'secret'};const ms=[{id:'known',title:"A\tB"}];const data=summary.studySummaryData(input,ms,1000);assert.deepEqual(data.modules,[{title:"A\tB",passed:true,score:.25}]);assert.equal(JSON.stringify(data).includes('secret'),false);assert.equal(summary.studySummaryStats(input,ms).total,1);assert.equal(input.completedModuleIds.length,2);
+});
