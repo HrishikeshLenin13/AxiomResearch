@@ -270,3 +270,7 @@ const p={completedModuleIds:[],moduleScores:{a:{score:.75,passed:false,attempts:
 test("known-score-stats-negative", () => {
 const p={completedModuleIds:[],moduleScores:{a:{score:-1,passed:false,attempts:1},unknown:{score:1}}};const ms=[{id:'a',title:'A'}];const stats=summary.studySummaryStats(p,ms);assert.equal(stats.scored,1);assert.equal(stats.averageScore,0);assert.equal(summary.studySummaryData(p,ms,0).modules[0].score,0);
 });
+
+test("known-score-stats-above-one", () => {
+const p={completedModuleIds:[],moduleScores:{a:{score:2,passed:false,attempts:1},unknown:{score:1}}};const ms=[{id:'a',title:'A'}];const stats=summary.studySummaryStats(p,ms);assert.equal(stats.scored,1);assert.equal(stats.averageScore,1);assert.equal(summary.studySummaryData(p,ms,0).modules[0].score,1);
+});
