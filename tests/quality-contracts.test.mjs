@@ -142,3 +142,7 @@ const input={completedModuleIds:['known','stale'],moduleScores:{known:{score:.25
 test("structured-title-tab", () => {
 const input={completedModuleIds:['known','stale'],moduleScores:{known:{score:.25,passed:true,attempts:1},stale:{score:1}},account:'secret'};const ms=[{id:'known',title:"A\tB"}];const data=summary.studySummaryData(input,ms,1000);assert.deepEqual(data.modules,[{title:"A\tB",passed:true,score:.25}]);assert.equal(JSON.stringify(data).includes('secret'),false);assert.equal(summary.studySummaryStats(input,ms).total,1);assert.equal(input.completedModuleIds.length,2);
 });
+
+test("structured-title-unicode", () => {
+const input={completedModuleIds:['known','stale'],moduleScores:{known:{score:.25,passed:true,attempts:1},stale:{score:1}},account:'secret'};const ms=[{id:'known',title:"Caf\u00e9 \u5b66\u7fd2 \ud83d\udcda"}];const data=summary.studySummaryData(input,ms,1000);assert.deepEqual(data.modules,[{title:"Caf\u00e9 \u5b66\u7fd2 \ud83d\udcda",passed:true,score:.25}]);assert.equal(JSON.stringify(data).includes('secret'),false);assert.equal(summary.studySummaryStats(input,ms).total,1);assert.equal(input.completedModuleIds.length,2);
+});
