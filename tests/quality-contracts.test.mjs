@@ -78,3 +78,7 @@ const ms=[{id:'known',title:"A \"B\""}];const p={completedModuleIds:['known'],mo
 test("csv-roundtrip-crlf", () => {
 const ms=[{id:'known',title:"A\r\nB"}];const p={completedModuleIds:['known'],moduleScores:{known:{score:.875,passed:true,attempts:1}}};const rows=csvRows(summary.studySummaryCsv(p,ms,1234));assert.deepEqual(rows[1],["A\r\nB",'yes','88','1234']);assert.equal(rows.length,2);
 });
+
+test("csv-roundtrip-tab", () => {
+const ms=[{id:'known',title:"A\tB"}];const p={completedModuleIds:['known'],moduleScores:{known:{score:.875,passed:true,attempts:1}}};const rows=csvRows(summary.studySummaryCsv(p,ms,1234));assert.deepEqual(rows[1],["A\tB",'yes','88','1234']);assert.equal(rows.length,2);
+});
