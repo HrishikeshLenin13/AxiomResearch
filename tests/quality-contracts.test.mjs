@@ -106,3 +106,7 @@ const ms=[{id:'known',title:"@test"}];const p={completedModuleIds:['known'],modu
 test("csv-roundtrip-spaced-formula", () => {
 const ms=[{id:'known',title:"  =1+2"}];const p={completedModuleIds:['known'],moduleScores:{known:{score:.875,passed:true,attempts:1}}};const rows=csvRows(summary.studySummaryCsv(p,ms,1234));assert.deepEqual(rows[1],["'  =1+2",'yes','88','1234']);assert.equal(rows.length,2);
 });
+
+test("csv-roundtrip-tab-formula", () => {
+const ms=[{id:'known',title:"\t=1"}];const p={completedModuleIds:['known'],moduleScores:{known:{score:.875,passed:true,attempts:1}}};const rows=csvRows(summary.studySummaryCsv(p,ms,1234));assert.deepEqual(rows[1],["'\t=1",'yes','88','1234']);assert.equal(rows.length,2);
+});
