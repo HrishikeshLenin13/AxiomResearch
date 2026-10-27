@@ -170,3 +170,7 @@ const input={completedModuleIds:['known','stale'],moduleScores:{known:{score:.25
 test("structured-title-tab-formula", () => {
 const input={completedModuleIds:['known','stale'],moduleScores:{known:{score:.25,passed:true,attempts:1},stale:{score:1}},account:'secret'};const ms=[{id:'known',title:"\t=1"}];const data=summary.studySummaryData(input,ms,1000);assert.deepEqual(data.modules,[{title:"\t=1",passed:true,score:.25}]);assert.equal(JSON.stringify(data).includes('secret'),false);assert.equal(summary.studySummaryStats(input,ms).total,1);assert.equal(input.completedModuleIds.length,2);
 });
+
+test("structured-title-line-leading", () => {
+const input={completedModuleIds:['known','stale'],moduleScores:{known:{score:.25,passed:true,attempts:1},stale:{score:1}},account:'secret'};const ms=[{id:'known',title:"\nlabel"}];const data=summary.studySummaryData(input,ms,1000);assert.deepEqual(data.modules,[{title:"\nlabel",passed:true,score:.25}]);assert.equal(JSON.stringify(data).includes('secret'),false);assert.equal(summary.studySummaryStats(input,ms).total,1);assert.equal(input.completedModuleIds.length,2);
+});
