@@ -286,3 +286,7 @@ const p={completedModuleIds:[],moduleScores:{a:{score:Infinity,passed:false,atte
 test("known-score-stats-negative-infinite", () => {
 const p={completedModuleIds:[],moduleScores:{a:{score:-Infinity,passed:false,attempts:1},unknown:{score:1}}};const ms=[{id:'a',title:'A'}];const stats=summary.studySummaryStats(p,ms);assert.equal(stats.scored,0);assert.equal(stats.averageScore,null);assert.equal(summary.studySummaryData(p,ms,0).modules[0].score,null);
 });
+
+test("known-score-stats-string", () => {
+const p={completedModuleIds:[],moduleScores:{a:{score:'1',passed:false,attempts:1},unknown:{score:1}}};const ms=[{id:'a',title:'A'}];const stats=summary.studySummaryStats(p,ms);assert.equal(stats.scored,0);assert.equal(stats.averageScore,null);assert.equal(summary.studySummaryData(p,ms,0).modules[0].score,null);
+});
