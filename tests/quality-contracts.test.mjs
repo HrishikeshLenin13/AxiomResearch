@@ -62,3 +62,7 @@ const p={completedModuleIds:[],moduleScores:{}};const ms=0;assert.equal(timer.fo
 test("elapsed-export-week", () => {
 const p={completedModuleIds:[],moduleScores:{}};const ms=604800000;assert.equal(timer.formatDuration(ms),"168h 0m 0s");assert.ok(summary.studySummary(p,[],ms).includes("Study time: 168h 0m 0s"));assert.ok(summary.studySummaryMarkdown(p,[],ms).includes("Study time: 168h 0m 0s"));assert.equal(summary.studySummaryData(p,[],ms).studyTimeMs,ms);
 });
+
+test("elapsed-export-safe-limit", () => {
+const p={completedModuleIds:[],moduleScores:{}};const ms=9007199254740991;assert.equal(timer.formatDuration(ms),"2501999792h 59m 0s");assert.ok(summary.studySummary(p,[],ms).includes("Study time: 2501999792h 59m 0s"));assert.ok(summary.studySummaryMarkdown(p,[],ms).includes("Study time: 2501999792h 59m 0s"));assert.equal(summary.studySummaryData(p,[],ms).studyTimeMs,ms);
+});
