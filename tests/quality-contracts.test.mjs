@@ -42,3 +42,7 @@ const p={completedModuleIds:[],moduleScores:{}};const ms=3601000;assert.equal(ti
 test("elapsed-export-hour-minute", () => {
 const p={completedModuleIds:[],moduleScores:{}};const ms=3660000;assert.equal(timer.formatDuration(ms),"1h 1m 0s");assert.ok(summary.studySummary(p,[],ms).includes("Study time: 1h 1m 0s"));assert.ok(summary.studySummaryMarkdown(p,[],ms).includes("Study time: 1h 1m 0s"));assert.equal(summary.studySummaryData(p,[],ms).studyTimeMs,ms);
 });
+
+test("elapsed-export-day", () => {
+const p={completedModuleIds:[],moduleScores:{}};const ms=86400000;assert.equal(timer.formatDuration(ms),"24h 0m 0s");assert.ok(summary.studySummary(p,[],ms).includes("Study time: 24h 0m 0s"));assert.ok(summary.studySummaryMarkdown(p,[],ms).includes("Study time: 24h 0m 0s"));assert.equal(summary.studySummaryData(p,[],ms).studyTimeMs,ms);
+});
