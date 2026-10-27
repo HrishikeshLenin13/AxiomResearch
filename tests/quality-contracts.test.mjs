@@ -274,3 +274,7 @@ const p={completedModuleIds:[],moduleScores:{a:{score:-1,passed:false,attempts:1
 test("known-score-stats-above-one", () => {
 const p={completedModuleIds:[],moduleScores:{a:{score:2,passed:false,attempts:1},unknown:{score:1}}};const ms=[{id:'a',title:'A'}];const stats=summary.studySummaryStats(p,ms);assert.equal(stats.scored,1);assert.equal(stats.averageScore,1);assert.equal(summary.studySummaryData(p,ms,0).modules[0].score,1);
 });
+
+test("known-score-stats-nan", () => {
+const p={completedModuleIds:[],moduleScores:{a:{score:NaN,passed:false,attempts:1},unknown:{score:1}}};const ms=[{id:'a',title:'A'}];const stats=summary.studySummaryStats(p,ms);assert.equal(stats.scored,0);assert.equal(stats.averageScore,null);assert.equal(summary.studySummaryData(p,ms,0).modules[0].score,null);
+});
