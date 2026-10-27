@@ -122,3 +122,7 @@ const ms=[{id:'known',title:""}];const p={completedModuleIds:['known'],moduleSco
 test("csv-roundtrip-backslash", () => {
 const ms=[{id:'known',title:"A\\B"}];const p={completedModuleIds:['known'],moduleScores:{known:{score:.875,passed:true,attempts:1}}};const rows=csvRows(summary.studySummaryCsv(p,ms,1234));assert.deepEqual(rows[1],["A\\B",'yes','88','1234']);assert.equal(rows.length,2);
 });
+
+test("csv-roundtrip-html", () => {
+const ms=[{id:'known',title:"<script>title</script>"}];const p={completedModuleIds:['known'],moduleScores:{known:{score:.875,passed:true,attempts:1}}};const rows=csvRows(summary.studySummaryCsv(p,ms,1234));assert.deepEqual(rows[1],["<script>title</script>",'yes','88','1234']);assert.equal(rows.length,2);
+});
