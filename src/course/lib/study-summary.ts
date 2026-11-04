@@ -68,3 +68,13 @@ export function studySummaryStats(progress: ProgressSummary, modules: readonly M
   return {total:data.modules.length, passed:data.modules.filter(item => item.passed).length,
     scored:scored.length, averageScore:scored.length ? scored.reduce((sum, score) => sum + score, 0) / scored.length : null};
 }
+
+/** Known-unit review suggestions only; this is not a certification decision. */
+export function studyReviewQueue(progress: ProgressSummary, modules: readonly ModuleSummary[], options: {limit?:number;minimumScore?:number} = {}) {
+  const {limit=10,minimumScore=.8}=options;
+  if (!Number.isSafeInteger(limit) || limit<0 || !Number.isFinite(minimumScore) || minimumScore<0 || minimumScore>1) throw new RangeError('Use a nonnegative integer limit and a score between zero and one.');
+  return studySummaryData(progress,modules,0).modules.map((item,index)=>({...item,id:modules[index].id,index,reason:item.passed?'below-target':'pending'}))
+    .filter(item=>!item.passed || (item.score!==null && item.score<minimumScore))
+    .sort((a,b)=>Number(a.passed)-Number(b.passed) || (a.score??-1)-(b.score??-1) || a.index-b.index)
+    .slice(0,limit).map(({index: _index,...item})=>item);
+}

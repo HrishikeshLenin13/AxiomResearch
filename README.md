@@ -162,3 +162,7 @@ The summary is a personal study aid, not a completion certificate or a verified 
 - [Feature usage and API contracts](docs/RECENT_IMPROVEMENTS.md)
 - [Troubleshooting and recovery](docs/TROUBLESHOOTING.md)
 - [Contributor checks and change review](docs/CONTRIBUTOR_CHECKLIST.md)
+
+## Implementation notes
+
+See [November implementation improvements](docs/NOVEMBER_IMPROVEMENTS.md) for the tested API additions.
