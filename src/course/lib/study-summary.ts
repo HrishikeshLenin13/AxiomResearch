@@ -20,10 +20,10 @@ export function studySummary(progress: ProgressSummary, modules: readonly Module
   lines.push('', 'Personal study record only; not a certificate or independently verified service-hours record.');
   return lines.join('\n') + '\n';
 }
-export function downloadStudySummary(progress: ProgressSummary, modules: readonly ModuleSummary[], timerMs: number, format: "text" | "json" | "csv" | "markdown" = "text") {
-  const payload = format === "markdown" ? studySummaryMarkdown(progress, modules, timerMs) : format === "csv" ? studySummaryCsv(progress,modules,timerMs) : format === "json" ? JSON.stringify(studySummaryData(progress,modules,timerMs), null, 2) + "\n" : studySummary(progress,modules,timerMs);
-  const url = URL.createObjectURL(new Blob([payload], {type:format === 'markdown' ? 'text/markdown;charset=utf-8' : format === 'csv' ? 'text/csv;charset=utf-8' : format === 'json' ? 'application/json' : 'text/plain;charset=utf-8'}));
-  const link = document.createElement('a');link.href=url;link.download=format === 'markdown' ? 'axiom-study-summary.md' : format === 'csv' ? 'axiom-study-summary.csv' : format === 'json' ? 'axiom-study-summary.json' : 'axiom-study-summary.txt';
+export function downloadStudySummary(progress: ProgressSummary, modules: readonly ModuleSummary[], timerMs: number, format: "text" | "json" | "csv" | "markdown" | "review-csv" = "text") {
+  const payload = format === "review-csv" ? studyReviewQueueCsv(progress,modules) : format === "markdown" ? studySummaryMarkdown(progress, modules, timerMs) : format === "csv" ? studySummaryCsv(progress,modules,timerMs) : format === "json" ? JSON.stringify(studySummaryData(progress,modules,timerMs), null, 2) + "\n" : studySummary(progress,modules,timerMs);
+  const url = URL.createObjectURL(new Blob([payload], {type:format === 'markdown' ? 'text/markdown;charset=utf-8' : (format === 'csv'||format === 'review-csv') ? 'text/csv;charset=utf-8' : format === 'json' ? 'application/json' : 'text/plain;charset=utf-8'}));
+  const link = document.createElement('a');link.href=url;link.download=format === 'review-csv' ? 'axiom-review-queue.csv' : format === 'markdown' ? 'axiom-study-summary.md' : format === 'csv' ? 'axiom-study-summary.csv' : format === 'json' ? 'axiom-study-summary.json' : 'axiom-study-summary.txt';
   document.body.append(link);link.click();link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
@@ -42,14 +42,9 @@ export function studySummaryData(progress: ProgressSummary, modules: readonly Mo
 /** CSV is a local study aid and contains no identity or access fields. */
 export function studySummaryCsv(progress: ProgressSummary, modules: readonly ModuleSummary[], timerMs: number): string {
   const data=studySummaryData(progress,modules,timerMs);
-  const cell=(value:string|number) => {
-    let text=String(value);
-    if (typeof value === 'string' && (/^\s*[=+@-]/.test(text) || /^[\t\r\n]/.test(text))) text="'"+text;
-    return '"'+text.replace(/"/g,'""')+'"';
-  };
   const rows: (string|number)[][]=[['Module','Passed','Score (%)','Study time (ms)']];
   for (const item of data.modules) rows.push([item.title,item.passed?'yes':'no',item.score===null?'':Math.round(item.score*100),data.studyTimeMs]);
-  return rows.map(row=>row.map(cell).join(',')).join('\r\n')+'\r\n';
+  return rows.map(row=>row.map(summaryCsvCell).join(',')).join('\r\n')+'\r\n';
 }
 
 
@@ -77,4 +72,17 @@ export function studyReviewQueue(progress: ProgressSummary, modules: readonly Mo
     .filter(item=>!item.passed || (item.score!==null && item.score<minimumScore))
     .sort((a,b)=>Number(a.passed)-Number(b.passed) || (a.score??-1)-(b.score??-1) || a.index-b.index)
     .slice(0,limit).map(({index: _index,...item})=>item);
+}
+
+function summaryCsvCell(value:string|number) {
+    let text=String(value);
+    if (typeof value === 'string' && (/^\s*[=+@-]/.test(text) || /^[\t\r\n]/.test(text))) text="'"+text;
+    return '"'+text.replace(/"/g,'""')+'"';
+}
+
+/** Portable review suggestions; account/access metadata is never exported. */
+export function studyReviewQueueCsv(progress:ProgressSummary,modules:readonly ModuleSummary[],options:{limit?:number;minimumScore?:number}={}) {
+  const rows:(string|number)[][]=[['Unit ID','Unit','Review reason','Recorded score (%)']];
+  for(const item of studyReviewQueue(progress,modules,options))rows.push([item.id,item.title,item.reason,item.score===null?'':Math.round(item.score*100)]);
+  return rows.map(row=>row.map(summaryCsvCell).join(',')).join('\r\n')+'\r\n';
 }
