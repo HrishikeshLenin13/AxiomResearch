@@ -1,7 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AlertTriangle, BookMarked, Clock, Lightbulb, ListChecks, Sparkles, Target } from "lucide-react";
 import {
-  COURSE_ESTIMATED_LABEL,
+  AlertTriangle,
+  BookMarked,
+  Clock,
+  Lightbulb,
+  ListChecks,
+  Sparkles,
+  Target,
+} from "lucide-react";
+import {
+  COURSE_MODULES,
   getModuleById,
   getNextModuleId,
   isModuleUnlocked,
@@ -15,9 +23,7 @@ export const Route = createFileRoute("/learn/modules/$moduleId/")({
   head: ({ params }) => {
     const module = getModuleById(params.moduleId);
     return {
-      meta: [
-        { title: `${module?.title ?? "Module"} — Research Foundations` },
-      ],
+      meta: [{ title: `${module?.title ?? "Module"} — Research Foundations` }],
     };
   },
   component: ModuleLessonPage,
@@ -44,7 +50,10 @@ function ModuleLessonPage() {
         <p className="text-[var(--course-ink-soft)] mt-2">
           Pass the previous unit quiz with at least 80% to unlock this lesson.
         </p>
-        <Link to="/learn/dashboard" className="inline-block mt-4 text-[var(--course-accent-deep)] font-medium">
+        <Link
+          to="/learn/dashboard"
+          className="inline-block mt-4 text-[var(--course-accent-deep)] font-medium"
+        >
           Back to dashboard
         </Link>
       </div>
@@ -53,11 +62,18 @@ function ModuleLessonPage() {
 
   const passed = completed.includes(module.id);
   const nextModuleId = getNextModuleId(module.id);
+  const sectionWords = module.sections.reduce(
+    (total, { body }) => total + body.trim().split(/\s+/).filter(Boolean).length,
+    0,
+  );
+  const readingMinutes = Math.max(1, Math.ceil(sectionWords / 200));
 
   return (
-    <div className="space-y-5 pb-10">
-      <div className="course-card p-6 md:p-8">
-        <p className="course-kicker">Unit {module.number} · {COURSE_ESTIMATED_LABEL}</p>
+    <div className="course-lesson">
+      <div className="course-lesson-header">
+        <p className="course-lesson-meta">
+          Unit {module.number} of {COURSE_MODULES.length}
+        </p>
         <h1 className="course-serif text-4xl md:text-5xl mt-2">{module.title}</h1>
         {module.tagline ? (
           <p className="text-[var(--course-ink-soft)] italic mt-2">{module.tagline}</p>
@@ -66,7 +82,7 @@ function ModuleLessonPage() {
         <div className="mt-4 flex flex-wrap gap-4 text-sm text-[var(--course-ink-soft)]">
           <span className="inline-flex items-center gap-2">
             <Clock size={14} />
-            ~{module.estimatedMinutes} min of reading
+            About {readingMinutes} min to read the main sections
           </span>
           <span className="inline-flex items-center gap-2">
             <ListChecks size={14} />
@@ -75,7 +91,7 @@ function ModuleLessonPage() {
         </div>
       </div>
 
-      <div className="course-card p-6 md:p-8">
+      <div className="course-lesson-section">
         <h2 className="font-semibold text-lg">Learning objectives</h2>
         <ul className="mt-3 space-y-2 text-[var(--course-ink-soft)] list-disc pl-5">
           {module.learningObjectives.map((objective) => (
@@ -85,9 +101,9 @@ function ModuleLessonPage() {
       </div>
 
       {module.sections.map((section) => (
-        <article key={section.title} className="course-card p-6 md:p-8">
+        <article key={section.title} className="course-lesson-section">
           <h2 className="font-semibold text-lg">{section.title}</h2>
-          <div className="mt-3 space-y-4 text-[var(--course-ink-soft)] leading-relaxed">
+          <div className="course-lesson-prose">
             {section.body.split("\n\n").map((paragraph) => (
               <p key={paragraph.slice(0, 48)}>{paragraph}</p>
             ))}
@@ -98,7 +114,7 @@ function ModuleLessonPage() {
         </article>
       ))}
 
-      <div className="course-card p-6 md:p-8">
+      <div className="course-lesson-section">
         <h2 className="font-semibold text-lg flex items-center gap-2">
           <Target size={18} className="text-[var(--course-accent-deep)]" />
           Key takeaways
@@ -110,7 +126,7 @@ function ModuleLessonPage() {
         </ul>
       </div>
 
-      <div className="course-card p-6 md:p-8">
+      <div className="course-lesson-section">
         <h2 className="font-semibold text-lg">Common mistakes</h2>
         <ul className="mt-3 space-y-2 text-[var(--course-ink-soft)] list-disc pl-5">
           {module.commonMistakes.map((item) => (
@@ -119,7 +135,7 @@ function ModuleLessonPage() {
         </ul>
       </div>
 
-      <div className="course-card p-6 md:p-8">
+      <div className="course-lesson-section">
         <h2 className="font-semibold text-lg">Research tips</h2>
         <ul className="mt-3 space-y-2 text-[var(--course-ink-soft)] list-disc pl-5">
           {module.researchTips.map((item) => (
@@ -128,35 +144,45 @@ function ModuleLessonPage() {
         </ul>
       </div>
 
-      <div className="course-card p-6 md:p-8">
+      <div className="course-lesson-section">
         <h2 className="font-semibold text-lg">Vocabulary</h2>
         <dl className="mt-4 space-y-3">
           {module.vocabulary.map((item) => (
-            <div key={item.term} className="rounded-xl border border-[var(--course-line)] bg-[var(--course-bg)]/50 p-4">
+            <div
+              key={item.term}
+              className="rounded-xl border border-[var(--course-line)] bg-[var(--course-bg)]/50 p-4"
+            >
               <dt className="font-medium flex items-center gap-2">
                 <BookMarked size={14} className="text-[var(--course-accent-deep)]" />
                 {item.term}
               </dt>
-              <dd className="text-sm text-[var(--course-ink-soft)] mt-1 leading-relaxed">{item.definition}</dd>
+              <dd className="text-sm text-[var(--course-ink-soft)] mt-1 leading-relaxed">
+                {item.definition}
+              </dd>
             </div>
           ))}
         </dl>
       </div>
 
-      <div className="course-card p-6 md:p-8">
+      <div className="course-lesson-section">
         <h2 className="font-semibold text-lg">Further reading</h2>
         <ul className="mt-3 space-y-3">
           {module.furtherReading.map((item) => (
             <li key={item.title}>
               <p className="font-medium">{item.title}</p>
-              <p className="text-sm text-[var(--course-ink-soft)] mt-1 leading-relaxed">{item.description}</p>
+              <p className="text-sm text-[var(--course-ink-soft)] mt-1 leading-relaxed">
+                {item.description}
+              </p>
             </li>
           ))}
         </ul>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link to="/learn/dashboard" className="text-sm text-[var(--course-ink-soft)] hover:text-[var(--course-ink)]">
+        <Link
+          to="/learn/dashboard"
+          className="text-sm text-[var(--course-ink-soft)] hover:text-[var(--course-ink)]"
+        >
           Dashboard
         </Link>
         <div className="flex gap-2">

@@ -1,6 +1,6 @@
 import { downloadStudySummary } from "../lib/study-summary";
 import { Link } from "@tanstack/react-router";
-import { Lock, Play } from "lucide-react";
+import { ArrowRight, Lock, Play } from "lucide-react";
 import {
   COURSE_MODULES,
   FINAL_QUIZ_ID,
@@ -13,11 +13,22 @@ import { CourseHeader } from "./CourseHeader";
 import { CourseProgressBar } from "./CourseProgressBar";
 
 export function CourseDashboard() {
-  const { user, volunteer, progress, activeTimerMs, resetCourseProgress, submitCourse, sheetsWarning } = useCourse();
+  const {
+    user,
+    volunteer,
+    progress,
+    activeTimerMs,
+    resetCourseProgress,
+    submitCourse,
+    sheetsWarning,
+  } = useCourse();
   const completed = progress?.completedModuleIds ?? [];
   const total = COURSE_MODULES.length;
   const firstName = volunteer?.firstName ?? user?.displayName?.split(" ")[0] ?? "Student";
   const modulesPassed = COURSE_MODULES.filter((module) => completed.includes(module.id)).length;
+  const nextModule = COURSE_MODULES.find(
+    ({ id }) => !completed.includes(id) && isModuleUnlocked(id, completed),
+  );
   const finalRecord = progress?.moduleScores[FINAL_QUIZ_ID];
   const finalUnlocked = isFinalUnlocked(completed);
   const finalPassed = Boolean(finalRecord?.passed);
@@ -32,9 +43,9 @@ export function CourseDashboard() {
     <div className="min-h-screen">
       <CourseHeader user={user} homeTo="/learn/dashboard" />
 
-      <main className="mx-auto max-w-3xl px-5 py-10 md:py-14">
-        <p className="course-kicker">Welcome</p>
-        <h1 className="course-serif text-5xl md:text-6xl mt-2 leading-none">{firstName}</h1>
+      <main className="course-dashboard">
+        <h1 className="course-serif text-4xl md:text-5xl leading-tight">Your learning dashboard</h1>
+        <p className="mt-3 text-[var(--course-ink-soft)]">Welcome, {firstName}.</p>
         {volunteer ? (
           <p className="mt-2 text-sm text-[var(--course-ink-soft)]">
             Volunteer ID {volunteer.volunteerId}
@@ -51,6 +62,24 @@ export function CourseDashboard() {
           questions are graded.
         </p>
 
+        {nextModule && (
+          <section className="course-dashboard-next" aria-labelledby="next-unit">
+            <div>
+              <h2 id="next-unit">Continue learning</h2>
+              <p>
+                Unit {nextModule.number} · {nextModule.title}
+              </p>
+            </div>
+            <Link
+              className="course-btn-primary"
+              to="/learn/modules/$moduleId"
+              params={{ moduleId: nextModule.id }}
+            >
+              Open lesson <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          </section>
+        )}
+
         <div className="mt-8">
           <div className="flex items-center justify-between text-sm mb-2">
             <span className="text-[var(--course-ink-soft)]">Course progress</span>
@@ -62,15 +91,47 @@ export function CourseDashboard() {
         </div>
 
         {progress ? (
-          <div className="mt-4 flex flex-wrap gap-4 text-sm">
-            <button type="button" className="underline underline-offset-4" onClick={() => downloadStudySummary(progress, COURSE_MODULES, activeTimerMs)}>Download study summary</button>
-            <button type="button" className="underline underline-offset-4" onClick={() => downloadStudySummary(progress, COURSE_MODULES, activeTimerMs, "json")}>Download JSON</button>
-            <button type="button" className="underline underline-offset-4" onClick={() => downloadStudySummary(progress, COURSE_MODULES, activeTimerMs, "csv")}>Download CSV</button>
-            <button type="button" className="underline underline-offset-4" onClick={() => downloadStudySummary(progress, COURSE_MODULES, activeTimerMs, "markdown")}>Download Markdown</button>
-          </div>
+          <details className="course-study-exports">
+            <summary>Study summary downloads</summary>
+            <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
+              <button
+                type="button"
+                className="underline underline-offset-4"
+                onClick={() => downloadStudySummary(progress, COURSE_MODULES, activeTimerMs)}
+              >
+                Download study summary
+              </button>
+              <button
+                type="button"
+                className="underline underline-offset-4"
+                onClick={() =>
+                  downloadStudySummary(progress, COURSE_MODULES, activeTimerMs, "json")
+                }
+              >
+                Download JSON
+              </button>
+              <button
+                type="button"
+                className="underline underline-offset-4"
+                onClick={() => downloadStudySummary(progress, COURSE_MODULES, activeTimerMs, "csv")}
+              >
+                Download CSV
+              </button>
+              <button
+                type="button"
+                className="underline underline-offset-4"
+                onClick={() =>
+                  downloadStudySummary(progress, COURSE_MODULES, activeTimerMs, "markdown")
+                }
+              >
+                Download Markdown
+              </button>
+            </div>
+          </details>
         ) : null}
 
-        <div className="mt-8 space-y-3">
+        <section className="mt-10 course-dashboard-units" aria-label="Curriculum">
+          <h2 className="mb-3 text-2xl font-semibold">Curriculum</h2>
           {COURSE_MODULES.map((module) => {
             const unlocked = isModuleUnlocked(module.id, completed);
             const passed = completed.includes(module.id);
@@ -86,7 +147,9 @@ export function CourseDashboard() {
                     {module.title}
                     {!unlocked ? <Lock size={14} /> : null}
                   </p>
-                  <p className="text-sm text-[var(--course-ink-soft)] italic mt-0.5">{module.tagline}</p>
+                  <p className="text-sm text-[var(--course-ink-soft)] italic mt-0.5">
+                    {module.tagline}
+                  </p>
                   {score ? (
                     <p className="text-xs text-[var(--course-ink-soft)] mt-1">
                       Grade: {Math.round(score.score * 100)}% · Attempts: {score.attempts}
@@ -94,7 +157,9 @@ export function CourseDashboard() {
                   ) : unlocked ? (
                     <p className="text-xs text-[var(--course-ink-soft)] mt-1">Not yet submitted</p>
                   ) : (
-                    <p className="text-xs text-[var(--course-ink-soft)] mt-1">Pass the previous quiz to unlock</p>
+                    <p className="text-xs text-[var(--course-ink-soft)] mt-1">
+                      Pass the previous quiz to unlock
+                    </p>
                   )}
                   {passed ? <p className="text-xs text-emerald-700 mt-1">Passed</p> : null}
                 </div>
@@ -136,8 +201,7 @@ export function CourseDashboard() {
               </p>
               {finalRecord ? (
                 <p className="text-xs text-[var(--course-ink-soft)] mt-1">
-                  Grade: {Math.round(finalRecord.score * 100)}%
-                  {finalPassed ? " · Passed" : ""}
+                  Grade: {Math.round(finalRecord.score * 100)}%{finalPassed ? " · Passed" : ""}
                 </p>
               ) : null}
             </div>
@@ -155,7 +219,7 @@ export function CourseDashboard() {
               </div>
             )}
           </div>
-        </div>
+        </section>
 
         {finalPassed && !courseSubmitted ? (
           <div className="course-card mt-8 p-6 text-center">

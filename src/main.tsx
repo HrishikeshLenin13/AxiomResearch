@@ -20,10 +20,12 @@ declare module "@tanstack/react-router" {
   }
 }
 
+document.querySelectorAll("[data-static-head]").forEach((tag) => tag.remove());
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
     </QueryClientProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
