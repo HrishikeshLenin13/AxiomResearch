@@ -38,14 +38,18 @@
       "kind": "button",
       "refersTo": "button-primary",
       "description": "One primary action per feature.",
-      "html": "<button class=\"site-button\">Explore programs</button>",
+      "html": "<button class=\"site-button\">View course</button>",
       "css": ".site-button{min-height:3rem;padding:.7rem 1rem;background:var(--axiom-blue,#1557ad);color:#fff;border:0;border-radius:.55rem;font-size:.925rem;font-weight:650}.site-button:hover{background:var(--axiom-blue-hover,#124686)}"
     }
   ],
   "narrative": {
     "northStar": "Make research easier to start.",
-    "overview": "A centered public invitation and a focused reading workspace share a common language.",
-    "keyCharacteristics": ["Instructive visual", "Slim navigation", "Readable lessons"],
+    "overview": "A content-first public program directory and a focused learning workspace share a common language.",
+    "keyCharacteristics": [
+      "Program information before decoration",
+      "Slim navigation",
+      "Readable lessons"
+    ],
     "dos": ["Label examples as examples.", "Use blue for primary actions."],
     "donts": [
       "Avoid implying access or publishing is guaranteed.",

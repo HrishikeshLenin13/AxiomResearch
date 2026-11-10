@@ -14,7 +14,7 @@ colors:
 typography:
   display:
     fontFamily: "Aptos, Helvetica Neue, system-ui, sans-serif"
-    fontSize: "clamp(2.7rem, 6.2vw, 5.5rem)"
+    fontSize: "clamp(2.5rem, 4.7vw, 4.65rem)"
     fontWeight: 680
     lineHeight: 1.015
     letterSpacing: "-0.04em"
@@ -41,7 +41,7 @@ components:
 
 ## Overview
 
-The nonprofit site invites students to explore; Axiom Learn helps them concentrate. Public pages use a centered opening, a single instructive visual, and editorial lists. Course views prioritize the current task, progress, and a readable measure.
+The nonprofit site invites students to explore; Axiom Learn helps them concentrate. The public homepage pairs a direct statement of purpose with a compact program directory. Prioritize names, access requirements, and concrete next actions before any supporting visuals. Course views prioritize the current task, progress, and a readable measure.
 
 ## Colors
 

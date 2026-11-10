@@ -1,188 +1,227 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowDown, ArrowRight, ChevronDown } from "lucide-react";
-import { COURSE_MODULES } from "../course/data/modules";
+import { ArrowRight, ChevronDown } from "lucide-react";
+import { COURSE_MODULES, PASSING_SCORE } from "../course/data/modules";
 import { useWebsitePageContent } from "../hooks/useWebsitePageContent";
+import { PUBLIC_PROGRAMS } from "../lib/public-programs";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Axiom — Research Starts with Curiosity" },
+      { title: "Axiom — Research for High School Students" },
       {
         name: "description",
         content:
-          "Learn research methods, explore meaningful questions, and find ways to collaborate with Axiom, a student-led nonprofit.",
+          "Axiom is a student-led nonprofit. Explore the Research Foundations course, mentored research, peer teams, and volunteer opportunities for high school students.",
       },
     ],
   }),
   component: HomePage,
 });
 
-const ways = [
+const participation = [
   {
-    title: "Learn",
-    copy: "Practice research methods, evaluate sources, and learn to explain what your evidence actually supports.",
-    to: "/course",
-    action: "View Research Foundations",
+    title: "I’m new to research",
+    copy: "Read the syllabus first. If you want to participate, fill out the Axiom application and contact the team if you need a course access code.",
+    to: "/join",
+    action: "How to apply",
   },
   {
-    title: "Collaborate",
-    copy: "Explore peer-led projects and learn how to give and use constructive feedback.",
+    title: "I want to work on a project",
+    copy: "Bring a question or a topic you’re interested in. Ask Axiom about peer teams or current mentor availability before planning around a placement.",
     to: "/programs",
-    action: "Explore the programs",
+    action: "Compare research pathways",
   },
   {
-    title: "Contribute",
-    copy: "Help build Axiom through volunteer roles in research review, curriculum, and outreach.",
+    title: "I want to volunteer",
+    copy: "Review student work, support newer researchers, or help with outreach and curriculum. Ask the team about open roles and service-hour documentation.",
     to: "/volunteer",
-    action: "See volunteer opportunities",
+    action: "See volunteer roles",
   },
 ] as const;
 
-const steps = [
-  [
-    "Start with the fundamentals",
-    "Learn what makes a question researchable and how to evaluate an existing source.",
-  ],
-  [
-    "Narrow the question",
-    "Choose an outcome you can observe, and a comparison that makes the result meaningful.",
-  ],
-  [
-    "Choose a method",
-    "Plan what you will measure, collect evidence responsibly, and document your decisions.",
-  ],
-  [
-    "Share what you found",
-    "State what the evidence supports, where it falls short, and what you would test next.",
-  ],
-];
-
 const questions = [
-  [
-    "Do I need research experience?",
-    "No. Research Foundations is designed for high school students who are new to research.",
-  ],
-  [
-    "What does the course include?",
-    "Eight self-paced units, timed multiple-choice quizzes, and a final assessment. The syllabus is available on the course page.",
-  ],
-  [
-    "Will I be matched with a mentor?",
-    "Mentored research is application-based. A placement depends on availability and is not guaranteed.",
-  ],
+  {
+    question: "Who is this for, and what does it cost?",
+    answer:
+      "Axiom is designed for high school students. Research Foundations assumes no prior research experience, and Axiom’s core programs are free for participating students.",
+  },
+  {
+    question: "Can I start the course right away?",
+    answer:
+      "Anyone can read the syllabus. The lessons and quizzes are in Axiom Learn, which requires an Axiom volunteer access code. Returning volunteers use their Volunteer ID to resume.",
+  },
+  {
+    question: "Will I get a mentor or publish a paper?",
+    answer:
+      "Neither is guaranteed. Mentored Research is application-based, and matching depends on availability. The student research archive is still in development, and work would need to be reviewed and approved before listing.",
+  },
 ];
 
-function ResearchNotebook() {
+function ProgramOverview() {
   return (
-    <figure className="research-notebook">
-      <div className="research-notebook-head">
-        <span>Research notebook</span>
-        <span>Example study</span>
-      </div>
-      <div className="research-notebook-content">
-        <div className="research-notebook-notes">
-          <figcaption>Does extra light change how fast seedlings grow?</figcaption>
-          <dl className="research-variables">
+    <section className="home-offerings" aria-labelledby="home-offerings-title">
+      <h2 id="home-offerings-title">What Axiom offers</h2>
+      <ul>
+        {PUBLIC_PROGRAMS.map(({ id, title, summary, status, to }) => (
+          <li key={id} className="home-offering">
             <div>
-              <dt>Change</dt>
-              <dd>Hours of light</dd>
+              <div className="home-offering-title">
+                <h3>
+                  <Link
+                    to={to === "/contact" ? "/programs" : to}
+                    hash={to === "/contact" ? id : undefined}
+                    aria-describedby={`home-status-${id} home-summary-${id}`}
+                  >
+                    {title}
+                  </Link>
+                </h3>
+                <span className="home-offering-status" id={`home-status-${id}`}>
+                  {id === "research-foundations" ? "Access code required" : status}
+                </span>
+              </div>
+              <p id={`home-summary-${id}`}>{summary}</p>
             </div>
-            <div>
-              <dt>Measure</dt>
-              <dd>Height over time</dd>
-            </div>
-          </dl>
-          <div className="research-schedule" aria-label="Measurement schedule">
-            {[1, 4, 7].map((day) => (
-              <span key={day}>Day {day}</span>
-            ))}
-          </div>
-        </div>
-        <div className="research-plate" aria-hidden="true">
-          <svg viewBox="0 0 310 230" fill="none">
-            <defs>
-              <linearGradient
-                id="plate-leaf"
-                x1="75"
-                y1="28"
-                x2="233"
-                y2="190"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop stopColor="#d8eea6" />
-                <stop offset="1" stopColor="#478579" />
-              </linearGradient>
-              <pattern id="plate-grid" width="24" height="24" patternUnits="userSpaceOnUse">
-                <path d="M24 0H0v24" stroke="#5c8e8a" strokeOpacity=".3" />
-              </pattern>
-            </defs>
-            <rect x="0" y="0" width="310" height="230" fill="url(#plate-grid)" />
-            <path
-              d="M42 173h226m-154 0c25-10 57-10 82 0"
-              stroke="#4b7773"
-              strokeWidth="1.5"
-              strokeDasharray="4 4"
-            />
-            <path
-              d="M154 170c1-27 8-53 25-79m-24 66c-9-23-22-40-39-54"
-              stroke="#356559"
-              strokeWidth="4"
-              strokeLinecap="round"
-            />
-            <path
-              d="M171 105c-1-35 27-54 68-58-8 38-32 61-68 58ZM132 125c-7-28-31-44-65-45 8 32 29 51 65 45Z"
-              fill="url(#plate-leaf)"
-              stroke="#356559"
-              strokeWidth="1.2"
-            />
-            <path
-              d="M176 101c14-15 32-27 49-42m-98 60c-14-13-28-22-47-31"
-              stroke="#356559"
-              strokeWidth="1.25"
-            />
-            <path
-              d="M273 170V49m-7 0h14m-14 30h14m-14 30h14m-14 30h14m-14 30h14"
-              stroke="#4b7773"
-              strokeWidth="1.2"
-            />
-            <circle cx="239" cy="47" r="4" fill="#356559" />
-          </svg>
-        </div>
-      </div>
-      <div className="research-notebook-foot">A research plan, not a result</div>
-    </figure>
+            <ArrowRight size={17} aria-hidden="true" />
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
 function HomePage() {
   const cms = useWebsitePageContent("home", {
-    title: "Research starts with curiosity.",
-    sub: "Axiom helps high school students build research skills, explore meaningful questions, and connect with a community of curious learners.",
+    title: "Research for high school students.",
+    sub: "Axiom is a student-led nonprofit. Learn to evaluate sources, design a study, and write a paper. Then explore peer teams or apply for mentorship.",
   });
 
   return (
     <>
-      <section className="home-hero">
-        <div className="site-wrap home-hero-copy">
-          <h1>{cms.title}</h1>
-          <p>{cms.sub}</p>
-          <div className="site-actions">
-            <Link to="/programs" className="site-button">
-              Explore programs <ArrowRight size={17} aria-hidden="true" />
-            </Link>
-            <a href="#how-axiom-works" className="site-text-link">
-              How Axiom works <ArrowDown size={16} aria-hidden="true" />
-            </a>
+      <section className="home-hero" aria-labelledby="home-title">
+        <div className="site-wrap home-intro">
+          <div className="home-hero-copy">
+            <h1 id="home-title">{cms.title}</h1>
+            <p>{cms.sub}</p>
+            <div className="site-actions">
+              <Link to="/course" className="site-button">
+                View course <ArrowRight size={17} aria-hidden="true" />
+              </Link>
+              <Link to="/join" className="site-text-link">
+                How to apply <ArrowRight size={16} aria-hidden="true" />
+              </Link>
+            </div>
+            <ul className="home-eligibility" aria-label="At a glance">
+              <li>Free core programs</li>
+              <li>No prior experience for the course</li>
+            </ul>
           </div>
+          <ProgramOverview />
         </div>
-        <ResearchNotebook />
       </section>
 
-      <section className="home-section home-ways">
+      <section className="home-course" aria-labelledby="home-course-title">
+        <div className="site-wrap home-section home-split">
+          <div>
+            <h2 id="home-course-title">Inside Research Foundations</h2>
+            <p>
+              Start by learning how to judge a source and turn a broad interest into a question you
+              can investigate. Work through study design and analysis, then learn to communicate
+              what you found and use AI responsibly.
+            </p>
+            <dl className="home-course-facts">
+              <div>
+                <dt>Format</dt>
+                <dd>
+                  {COURSE_MODULES.length} self-paced lessons, timed unit quizzes, and a final exam.
+                </dd>
+              </div>
+              <div>
+                <dt>Progress</dt>
+                <dd>
+                  Score {Math.round(PASSING_SCORE * 100)}% on a unit quiz to unlock the next lesson.
+                </dd>
+              </div>
+              <div>
+                <dt>Access</dt>
+                <dd>Public syllabus; Axiom volunteer access code required for lessons.</dd>
+              </div>
+            </dl>
+            <div className="site-actions">
+              <Link to="/course" className="site-button site-button-light">
+                View syllabus and access details <ArrowRight size={17} aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
+          <div className="home-curriculum">
+            <h3 className="home-curriculum-head">Course curriculum</h3>
+            <ol>
+              {COURSE_MODULES.map(({ id, number, title }) => (
+                <li key={id}>
+                  <span aria-hidden="true">{String(number).padStart(2, "0")}</span>
+                  {title}
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="site-wrap home-section home-split"
+        id="how-axiom-works"
+        aria-labelledby="home-project-title"
+      >
+        <div>
+          <h2 id="home-project-title">How a student project takes shape</h2>
+          <p>
+            Axiom’s course gives you the methods. Peer teams and mentorship are ways to use them on
+            a project.
+          </p>
+          <Link to="/about" className="site-text-link">
+            Why Axiom exists <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+        </div>
+        <ol className="home-steps">
+          <li>
+            <span aria-hidden="true">01</span>
+            <div>
+              <h3>Find a question worth testing</h3>
+              <p>
+                Read existing work, narrow your topic, and say exactly what you want to find out.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span aria-hidden="true">02</span>
+            <div>
+              <h3>Plan and carry out the research</h3>
+              <p>
+                Choose what evidence to gather and how to compare it. On a team, divide the work and
+                agree on how to document it.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span aria-hidden="true">03</span>
+            <div>
+              <h3>Use feedback to improve the work</h3>
+              <p>
+                Ask peers to challenge your conclusions, revise your draft, and explain what the
+                evidence does and doesn’t support.
+              </p>
+              <Link to="/research" className="site-text-link">
+                Read about sharing student research <ArrowRight size={16} aria-hidden="true" />
+              </Link>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section className="home-section home-ways" aria-labelledby="home-participation-title">
         <div className="site-wrap">
-          <h2>Find your way into research.</h2>
+          <h2 id="home-participation-title">Where to start</h2>
           <div className="home-ways-grid">
-            {ways.map(({ title, copy, to, action }) => (
+            {participation.map(({ title, copy, to, action }) => (
               <article key={title}>
                 <h3>{title}</h3>
                 <p>{copy}</p>
@@ -195,129 +234,38 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="site-wrap home-section home-split" id="how-axiom-works">
+      <section className="site-wrap home-section home-split" aria-labelledby="home-questions-title">
         <div>
-          <h2>From a question to something you can test.</h2>
-          <p>
-            Research isn’t a straight line. These are the steps you’ll practice as you turn an idea
-            into a project.
-          </p>
+          <h2 id="home-questions-title">Common questions</h2>
+          <Link to="/faq" className="site-text-link">
+            Read all FAQs <ArrowRight size={16} aria-hidden="true" />
+          </Link>
         </div>
-        <ol className="home-steps">
-          {steps.map(([title, body], index) => (
-            <li key={title}>
-              <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-              <div>
-                <h3>{title}</h3>
-                <p>{body}</p>
-              </div>
-            </li>
+        <div className="home-questions">
+          {questions.map(({ question, answer }) => (
+            <details key={question}>
+              <summary>
+                {question}
+                <ChevronDown size={17} aria-hidden="true" />
+              </summary>
+              <p>{answer}</p>
+            </details>
           ))}
-        </ol>
-      </section>
-
-      <section className="home-course">
-        <div className="site-wrap home-section home-split">
-          <div>
-            <h2>Learn how research actually works.</h2>
-            <p>
-              Research Foundations is an eight-unit, self-paced course for high school students.
-              Read full lessons, check your understanding in timed quizzes, and finish with a final
-              assessment.
-            </p>
-            <div className="site-actions">
-              <Link to="/course" className="site-button site-button-light">
-                View the course <ArrowRight size={17} aria-hidden="true" />
-              </Link>
-            </div>
-          </div>
-          <div className="home-curriculum">
-            <div className="home-curriculum-head">
-              <span>Axiom Learn</span>
-              <span>Curriculum preview</span>
-            </div>
-            <ol>
-              {COURSE_MODULES.slice(0, 4).map((module) => (
-                <li key={module.id}>
-                  <span>{String(module.number).padStart(2, "0")}</span>
-                  {module.title}
-                </li>
-              ))}
-            </ol>
-          </div>
         </div>
       </section>
 
-      <section className="site-wrap home-section home-split">
-        <div>
-          <h2>Take your next step.</h2>
-          <p>
-            Explore the ways students and volunteers can participate today, and see what Axiom is
-            still building.
-          </p>
-        </div>
-        <div className="home-steps home-pathways">
-          <article>
-            <h3>Work with other students</h3>
-            <p>
-              Explore peer-led collaboration and application-based mentorship. Ask about current
-              availability before planning a project.
-            </p>
-            <Link className="site-text-link" to="/programs">
-              View research pathways <ArrowRight size={16} aria-hidden="true" />
+      <section className="home-section home-close" aria-labelledby="home-join-title">
+        <div className="site-wrap">
+          <h2 id="home-join-title">Join Axiom</h2>
+          <p>Apply to get involved, or ask the team which opportunity is the best fit for you.</p>
+          <div className="site-actions">
+            <Link to="/join" className="site-button">
+              See how to apply <ArrowRight size={17} aria-hidden="true" />
             </Link>
-          </article>
-          <article>
-            <h3>Share student research</h3>
-            <p>
-              Axiom is developing an open research archive. Learn how the team thinks about review
-              and sharing student work.
-            </p>
-            <Link className="site-text-link" to="/research">
-              Explore student research <ArrowRight size={16} aria-hidden="true" />
-            </Link>
-          </article>
-          <article>
-            <h3>Help run Axiom</h3>
-            <p>Find roles in outreach, curriculum, technology, and research review.</p>
-            <Link className="site-text-link" to="/careers">
-              Browse open roles <ArrowRight size={16} aria-hidden="true" />
-            </Link>
-          </article>
-        </div>
-      </section>
-
-      <section className="home-section home-ways">
-        <div className="site-wrap home-split">
-          <div>
-            <h2>Before you begin.</h2>
-            <Link to="/faq" className="site-text-link">
-              Read all FAQs <ArrowRight size={16} aria-hidden="true" />
+            <Link to="/contact" className="site-text-link">
+              Contact the team <ArrowRight size={16} aria-hidden="true" />
             </Link>
           </div>
-          <div className="home-questions">
-            {questions.map(([question, answer]) => (
-              <details key={question}>
-                <summary>
-                  {question}
-                  <ChevronDown size={17} aria-hidden="true" />
-                </summary>
-                <p>{answer}</p>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="site-wrap home-section home-close">
-        <h2>Your next question could become your first research project.</h2>
-        <div className="site-actions">
-          <Link to="/join" className="site-button">
-            Join Axiom <ArrowRight size={17} aria-hidden="true" />
-          </Link>
-          <Link to="/course" className="site-text-link">
-            Explore the course <ArrowRight size={16} aria-hidden="true" />
-          </Link>
         </div>
       </section>
     </>

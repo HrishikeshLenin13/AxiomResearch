@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ExternalLink } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
 import { CmsPageHero } from "../components/CmsPageHero";
 
 export const Route = createFileRoute("/contact")({
@@ -38,17 +38,15 @@ function ContactPage() {
             </div>
           </article>
           <article>
-            <h2>Use the contact form</h2>
+            <h2>Apply to get involved</h2>
             <div>
-              <p>The form opens on Tally in a new tab.</p>
-              <a
-                href="https://tally.so/r/gDJLWP"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="site-text-link"
-              >
-                Open the contact form <ExternalLink size={16} aria-hidden="true" />
-              </a>
+              <p>
+                Interested in joining Axiom as a student or volunteer? Read how to apply before
+                opening the application.
+              </p>
+              <Link to="/join" className="site-text-link">
+                See how to apply <ArrowRight size={16} aria-hidden="true" />
+              </Link>
             </div>
           </article>
         </div>

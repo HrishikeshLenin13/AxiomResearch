@@ -63,7 +63,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
-      { title: "Axiom — Research Starts with Curiosity" },
+      { title: "Axiom — Research for High School Students" },
       {
         name: "description",
         content:

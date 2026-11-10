@@ -2,10 +2,10 @@
 
 ## The two surfaces
 
-- **Axiom:** a thin public header, centered headline-and-visual hero, light page fields with one dark course feature, and editorial rows rather than repeated decorative cards.
+- **Axiom:** a thin public header, content-first hero with a program directory, light page fields with one dark course feature, and editorial rows rather than repeated decorative cards.
 - **Axiom Learn:** the same type and accent, with a quiet workspace, a curriculum rail that becomes a disclosure on mobile, and longer line-height for reading. The active quiz keeps its time visible without making the entire briefing sticky.
 
-The [Apple homepage](https://www.apple.com/) informed the presentation pattern: concise centered openings, decisive actions, and one primary visual. The [Layout](https://developer.apple.com/design/human-interface-guidelines/layout) and [Typography](https://developer.apple.com/design/human-interface-guidelines/typography) Human Interface Guidelines informed hierarchy, adaptation, and legibility. Axiom’s mark, seedling diagram, color choices, and content remain its own.
+The [Apple homepage](https://www.apple.com/) informed the presentation pattern: concise openings, clear actions, and restraint in supporting visuals. The [Layout](https://developer.apple.com/design/human-interface-guidelines/layout) and [Typography](https://developer.apple.com/design/human-interface-guidelines/typography) Human Interface Guidelines informed hierarchy, adaptation, and legibility. Axiom’s mark, color choices, and content remain its own.
 
 ## Tokens and components
 
