@@ -1,67 +1,77 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { CmsPageHero } from "../components/CmsPageHero";
-import { Reveal } from "../components/Reveal";
-import { Target, Eye, Users, Rocket } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "About — Axiom" },
-      { name: "description", content: "The story, mission, and vision behind Axiom — a student-led nonprofit democratizing research." },
+      {
+        name: "description",
+        content:
+          "The story, mission, and vision behind Axiom — a student-led nonprofit democratizing research.",
+      },
     ],
   }),
   component: AboutPage,
 });
 
 function AboutPage() {
-  const blocks = [
-    { icon: Target, t: "Our mission", d: "To open the doors of academic research to any student, anywhere, with the curiosity to walk through them." },
-    { icon: Eye, t: "Our vision", d: "A world where original research is a normal part of growing up — not a privilege reserved for a lucky few." },
-    { icon: Users, t: "Who we are", d: "A small team of high school students who love research, building the program we wished existed when we were starting out." },
-    { icon: Rocket, t: "Where we're going", d: "Growing into more school chapters, building our open research database, and helping other curious students start their own projects." },
-  ];
-
   return (
     <>
       <CmsPageHero
         pageKey="about"
         eyebrow="About Axiom"
-        fallbackTitle={<>Built by students. <span className="text-gradient-brand">For students.</span></>}
+        fallbackTitle="Built by students. For students."
         fallbackTitleText="Built by students. For students."
-        fallbackSub="Axiom started with a simple question: why does serious research feel out of reach to most high schoolers? We're the answer we wish we'd had."
+        fallbackSub="Axiom started with a question: why does doing research feel out of reach to so many high school students?"
       />
-
-      <section className="relative pb-16 md:pb-20 px-6">
-        <div className="mx-auto max-w-4xl">
-          <Reveal>
-            <div className="glass rounded-3xl p-8 md:p-12 leading-relaxed text-foreground/90 text-lg space-y-5">
-              <p>
-                Axiom was started by a small group of high school students who were obsessed with research — but kept running into the same wall. Real research opportunities felt locked behind the right school, the right city, or knowing the right person. So we decided to build the thing we wished had existed for us.
-              </p>
-              <p>
-                What began as a handful of friends helping each other read papers and form hypotheses has grown into a community of students learning research methodology together, working through ideas with mentors, collaborating in small teams, and publishing what they find.
-              </p>
-              <p>
-                We're not a credential factory and we're not pretending to be more than we are. We're students helping other students do real work — and inviting anyone curious enough to want to grow alongside us.
-              </p>
-            </div>
-          </Reveal>
+      <section className="site-wrap site-page-body home-split" aria-labelledby="our-story">
+        <h2 className="site-subheading" id="our-story">
+          The program we wanted as students.
+        </h2>
+        <div className="site-copy">
+          <p>
+            A group of high school students wanted to do research, but finding a way in often
+            depended on the right school, the right city, or knowing the right person. They started
+            helping one another read papers and form hypotheses.
+          </p>
+          <p>
+            That work became Axiom: a student-led nonprofit that teaches research methods and helps
+            students find ways to collaborate and share their work.
+          </p>
+          <Link to="/founders" className="site-text-link">
+            Meet the founders <ArrowRight size={16} aria-hidden="true" />
+          </Link>
         </div>
       </section>
-
-      <section className="relative pb-28 md:pb-32 px-6">
-        <div className="mx-auto max-w-7xl grid md:grid-cols-2 gap-5">
-          {blocks.map((b, i) => (
-            <Reveal key={b.t} delay={i * 0.07}>
-              <div className="glass rounded-3xl p-6 md:p-8 h-full">
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-violet/30 to-cyan-glow/20 border border-white/10 grid place-items-center mb-5">
-                  <b.icon size={18} className="text-cyan-glow" />
-                </div>
-                <h3 className="text-2xl font-semibold mb-2">{b.t}</h3>
-                <p className="text-muted-foreground leading-relaxed">{b.d}</p>
-              </div>
-            </Reveal>
-          ))}
+      <section className="home-section home-ways">
+        <div className="site-wrap">
+          <h2>Make research easier to start.</h2>
+          <div className="home-ways-grid">
+            <article>
+              <h3>Open the door</h3>
+              <p>
+                Teach the methods and habits that make research less intimidating for beginners.
+              </p>
+            </article>
+            <article>
+              <h3>Work together</h3>
+              <p>
+                Give students ways to share questions, compare approaches, and learn from peer
+                feedback.
+              </p>
+            </article>
+            <article>
+              <h3>Share what holds up</h3>
+              <p>Build an archive for student work that has been reviewed and approved.</p>
+            </article>
+          </div>
+          <div className="site-actions">
+            <Link to="/programs" className="site-button">
+              Explore the programs <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          </div>
         </div>
       </section>
     </>

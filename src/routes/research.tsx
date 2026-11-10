@@ -1,13 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
 import { CmsPageHero } from "../components/CmsPageHero";
-import { Reveal } from "../components/Reveal";
-import { FileText } from "lucide-react";
 
 export const Route = createFileRoute("/research")({
   head: () => ({
     meta: [
-      { title: "Research Database — Axiom" },
-      { name: "description", content: "An open, peer-reviewed archive of student research from across the Axiom network." },
+      { title: "Student Research — Axiom" },
+      {
+        name: "description",
+        content:
+          "Read about Axiom’s open student research archive and how student submissions will be reviewed.",
+      },
     ],
   }),
   component: ResearchPage,
@@ -18,25 +21,31 @@ function ResearchPage() {
     <>
       <CmsPageHero
         pageKey="research"
-        eyebrow="Research database"
-        fallbackTitle={<>An open archive of <span className="text-gradient-brand">student work.</span></>}
-        fallbackTitleText="An open archive of student work."
-        fallbackSub="The research archive will open once reviewed student papers are ready for publication."
+        eyebrow="Student research"
+        fallbackTitle="An archive for student research."
+        fallbackTitleText="An archive for student research."
+        fallbackSub="Axiom is developing an open archive. No papers are listed yet; student submissions will be added after review and approval."
       />
-
-      <section className="relative pb-28 md:pb-32 px-6">
-        <div className="mx-auto max-w-4xl">
-          <Reveal>
-            <div className="glass-strong rounded-3xl p-8 md:p-12 text-center">
-              <div className="mx-auto w-14 h-14 rounded-2xl bg-primary/10 text-primary grid place-items-center mb-5">
-                <FileText size={24} />
-              </div>
-              <h2 className="text-3xl font-semibold">Research archive coming soon</h2>
-              <p className="mt-4 text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-                Papers will be added after the team has received, reviewed, and approved real student submissions.
-              </p>
-            </div>
-          </Reveal>
+      <section className="site-wrap site-page-body home-split" aria-labelledby="research-review">
+        <div>
+          <h2 className="site-subheading" id="research-review">
+            What makes research ready to share?
+          </h2>
+        </div>
+        <div className="site-copy">
+          <p>
+            Explain the question, show how you gathered and analyzed evidence, and describe what
+            your findings do and don’t support. Review helps you make that reasoning clear to
+            someone who wasn’t part of the project.
+          </p>
+          <div className="site-actions">
+            <Link to="/contact" className="site-button">
+              Ask about student submissions
+            </Link>
+            <Link to="/course" className="site-text-link">
+              Learn research methods <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          </div>
         </div>
       </section>
     </>

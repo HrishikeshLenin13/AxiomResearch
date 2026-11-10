@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-10T17:17:51.102031+00:00",
+  "title": "Design System: Axiom",
+  "extensions": {
+    "shadows": [
+      {
+        "name": "subtle-elevation",
+        "value": "0 10px 30px -21px rgb(22 35 56 / 32%)",
+        "purpose": "Menus and overlays"
+      }
+    ],
+    "motion": [
+      {
+        "name": "fast-feedback",
+        "value": "160ms ease-out",
+        "purpose": "Interactive state transitions"
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "public-nav",
+        "value": "58rem"
+      },
+      {
+        "name": "course-rail",
+        "value": "54rem"
+      },
+      {
+        "name": "single-column",
+        "value": "43rem"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "One primary action per feature.",
+      "html": "<button class=\"site-button\">Explore programs</button>",
+      "css": ".site-button{min-height:3rem;padding:.7rem 1rem;background:var(--axiom-blue,#1557ad);color:#fff;border:0;border-radius:.55rem;font-size:.925rem;font-weight:650}.site-button:hover{background:var(--axiom-blue-hover,#124686)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Make research easier to start.",
+    "overview": "A centered public invitation and a focused reading workspace share a common language.",
+    "keyCharacteristics": ["Instructive visual", "Slim navigation", "Readable lessons"],
+    "dos": ["Label examples as examples.", "Use blue for primary actions."],
+    "donts": [
+      "Avoid implying access or publishing is guaranteed.",
+      "Avoid motion that hides content."
+    ]
+  }
+}

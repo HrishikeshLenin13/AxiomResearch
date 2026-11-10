@@ -1,12 +1,12 @@
 import {
   Outlet,
+  HeadContent,
   Link,
   createRootRouteWithContext,
   useRouter,
   useLocation,
 } from "@tanstack/react-router";
 import type { QueryClient } from "@tanstack/react-query";
-import { AnimatePresence, motion } from "framer-motion";
 
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
@@ -21,7 +21,10 @@ function NotFoundComponent() {
           The page you're looking for doesn't exist or has been moved.
         </p>
         <div className="mt-6">
-          <Link to="/" className="inline-flex rounded-full bg-primary text-primary-foreground px-5 py-2.5 text-sm font-medium">
+          <Link
+            to="/"
+            className="inline-flex rounded-full bg-primary text-primary-foreground px-5 py-2.5 text-sm font-medium"
+          >
             Back home
           </Link>
         </div>
@@ -40,12 +43,17 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <p className="mt-2 text-sm text-muted-foreground">Something went wrong on our end.</p>
         <div className="mt-6 flex gap-2 justify-center">
           <button
-            onClick={() => { router.invalidate(); reset(); }}
+            onClick={() => {
+              router.invalidate();
+              reset();
+            }}
             className="rounded-full bg-primary text-primary-foreground px-5 py-2.5 text-sm font-medium"
           >
             Try again
           </button>
-          <a href="/" className="rounded-full border border-white/15 px-5 py-2.5 text-sm">Home</a>
+          <a href="/" className="rounded-full border border-white/15 px-5 py-2.5 text-sm">
+            Home
+          </a>
         </div>
       </div>
     </div>
@@ -53,6 +61,16 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  head: () => ({
+    meta: [
+      { title: "Axiom — Research Starts with Curiosity" },
+      {
+        name: "description",
+        content:
+          "Axiom helps high school students learn research methods and find ways to collaborate.",
+      },
+    ],
+  }),
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
@@ -65,21 +83,25 @@ function RootComponent() {
     loc.pathname.startsWith("/admin/") ||
     loc.pathname === "/login" ||
     loc.pathname.startsWith("/learn");
+  if (hidePublicChrome)
+    return (
+      <>
+        <HeadContent />
+        <Outlet />
+      </>
+    );
+
   return (
-    <div className="relative min-h-screen bg-background text-foreground antialiased">
-      {!hidePublicChrome && <Navbar />}
-      <AnimatePresence mode="wait">
-        <motion.main
-          key={loc.pathname}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <Outlet />
-        </motion.main>
-      </AnimatePresence>
-      {!hidePublicChrome && <Footer />}
+    <div className="site-root">
+      <HeadContent />
+      <a className="site-skip" href="#main-content">
+        Skip to main content
+      </a>
+      <Navbar />
+      <main id="main-content" tabIndex={-1}>
+        <Outlet />
+      </main>
+      <Footer />
     </div>
   );
 }

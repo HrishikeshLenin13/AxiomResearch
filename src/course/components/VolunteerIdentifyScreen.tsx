@@ -12,9 +12,10 @@ export function VolunteerIdentifyScreen() {
   const [lastName, setLastName] = useState("");
   const [volunteerId, setVolunteerId] = useState("");
   const [revealedId, setRevealedId] = useState("");
-  const [pendingIdentity, setPendingIdentity] = useState<{ firstName: string; lastName: string } | null>(
-    null,
-  );
+  const [pendingIdentity, setPendingIdentity] = useState<{
+    firstName: string;
+    lastName: string;
+  } | null>(null);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -71,8 +72,7 @@ export function VolunteerIdentifyScreen() {
     <div className="min-h-screen">
       <CourseHeader user={null} showCourseBadge={false} />
       <main className="mx-auto max-w-lg px-5 py-12 md:py-16">
-        <p className="course-kicker">Volunteer identification</p>
-        <h1 className="course-serif text-4xl md:text-5xl mt-3 leading-tight">
+        <h1 className="course-serif text-4xl md:text-5xl leading-tight">
           {mode === "choose" ? "How are you joining?" : mode === "new" ? "Sign up" : "Welcome back"}
         </h1>
         <p className="mt-4 text-[var(--course-ink-soft)] leading-relaxed">
@@ -136,7 +136,11 @@ export function VolunteerIdentifyScreen() {
                 required
               />
             </div>
-            {error ? <p className="text-sm text-red-700">{error}</p> : null}
+            {error ? (
+              <p className="text-sm text-red-700" role="alert">
+                {error}
+              </p>
+            ) : null}
             <button type="submit" disabled={submitting} className="course-btn-primary w-full">
               {submitting ? "Creating your ID..." : "Create my Volunteer ID"}
             </button>
@@ -173,7 +177,11 @@ export function VolunteerIdentifyScreen() {
                 This is the ID we showed you when you signed up — not your access password.
               </p>
             </div>
-            {error ? <p className="text-sm text-red-700">{error}</p> : null}
+            {error ? (
+              <p className="text-sm text-red-700" role="alert">
+                {error}
+              </p>
+            ) : null}
             <button type="submit" disabled={submitting} className="course-btn-primary w-full">
               {submitting ? "Loading..." : "Continue to the course"}
             </button>

@@ -17,13 +17,21 @@ type QuizViewProps = {
   isFinal?: boolean;
 };
 
-export function QuizView({ moduleId, moduleTitle, nextModuleId, briefing, isFinal = false }: QuizViewProps) {
+export function QuizView({
+  moduleId,
+  moduleTitle,
+  nextModuleId,
+  briefing,
+  isFinal = false,
+}: QuizViewProps) {
   const quiz = getQuizByModuleId(moduleId);
   const { recordQuizAttempt, progress, setQuizSessionActive, submitCourse } = useCourse();
   const [phase, setPhase] = useState<"briefing" | "active" | "results">("briefing");
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitting, setSubmitting] = useState(false);
-  const [secondsLeft, setSecondsLeft] = useState(isFinal ? FINAL_QUIZ_SECONDS : MODULE_QUIZ_SECONDS);
+  const [secondsLeft, setSecondsLeft] = useState(
+    isFinal ? FINAL_QUIZ_SECONDS : MODULE_QUIZ_SECONDS,
+  );
   const [result, setResult] = useState<{
     correct: number;
     total: number;
@@ -37,7 +45,7 @@ export function QuizView({ moduleId, moduleTitle, nextModuleId, briefing, isFina
   answersRef.current = answers;
 
   const previous = progress?.moduleScores[moduleId];
-  const questions = quiz?.questions ?? [];
+  const questions = useMemo(() => quiz?.questions ?? [], [quiz]);
   const totalSeconds = isFinal ? FINAL_QUIZ_SECONDS : MODULE_QUIZ_SECONDS;
   const isRetake = (previous?.attempts ?? 0) > 0;
 
@@ -122,7 +130,10 @@ export function QuizView({ moduleId, moduleTitle, nextModuleId, briefing, isFina
     return (
       <div className="course-card p-8">
         <p>Quiz not available yet.</p>
-        <Link to="/learn/dashboard" className="text-[var(--course-accent-deep)] mt-4 inline-block font-medium">
+        <Link
+          to="/learn/dashboard"
+          className="text-[var(--course-accent-deep)] mt-4 inline-block font-medium"
+        >
           Back to dashboard
         </Link>
       </div>
@@ -140,8 +151,8 @@ export function QuizView({ moduleId, moduleTitle, nextModuleId, briefing, isFina
         <p className="course-kicker">{isFinal ? "Final exam" : "Unit quiz"}</p>
         <h1 className="course-serif text-3xl md:text-4xl">{moduleTitle}</h1>
         <p className="text-[var(--course-ink-soft)]">
-          {questions.length} multiple-choice questions · {Math.round(totalSeconds / 60)} minute timer ·{" "}
-          {Math.round(PASSING_SCORE * 100)}% to pass
+          {questions.length} multiple-choice questions · {Math.round(totalSeconds / 60)} minute
+          timer · {Math.round(PASSING_SCORE * 100)}% to pass
         </p>
         {previous ? (
           <p className="text-sm text-[var(--course-ink-soft)]">
@@ -156,13 +167,18 @@ export function QuizView({ moduleId, moduleTitle, nextModuleId, briefing, isFina
             {briefing.map((item) => (
               <li key={item}>{item}</li>
             ))}
-            <li>The timer starts when you click Begin. Unanswered questions count as incorrect if time runs out.</li>
+            <li>
+              The timer starts when you click Begin. Unanswered questions count as incorrect if time
+              runs out.
+            </li>
             <li>If you leave or close the tab, this attempt may be deleted.</li>
             <li>
               Your first attempt can earn up to 100%. Any retake is recorded at a maximum of{" "}
               {Math.round(RETAKE_SCORE_CAP * 100)}%.
             </li>
-            <li>Your grade appears immediately after you submit. There are no written questions.</li>
+            <li>
+              Your grade appears immediately after you submit. There are no written questions.
+            </li>
           </ul>
         </div>
 
@@ -175,7 +191,7 @@ export function QuizView({ moduleId, moduleTitle, nextModuleId, briefing, isFina
 
   return (
     <div className="space-y-5 pb-10">
-      <div className="course-card p-6 md:p-8 sticky top-[4.5rem] z-10">
+      <div className="course-card course-quiz-status">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="course-kicker">{isFinal ? "Final exam" : "Unit quiz"}</p>
@@ -183,8 +199,11 @@ export function QuizView({ moduleId, moduleTitle, nextModuleId, briefing, isFina
           </div>
           {phase === "active" ? (
             <div
-              className={`rounded-full border px-4 py-2 text-sm font-semibold ${
-                timerUrgent ? "border-red-400 text-red-700 bg-red-50" : "border-[var(--course-line)]"
+              role="timer"
+              className={`rounded-lg border px-3 py-2 text-sm font-semibold tabular-nums ${
+                timerUrgent
+                  ? "border-red-400 text-red-700 bg-red-50"
+                  : "border-[var(--course-line)]"
               }`}
             >
               Time left {timerLabel}
@@ -233,7 +252,9 @@ export function QuizView({ moduleId, moduleTitle, nextModuleId, briefing, isFina
           <div className="space-y-4">
             <div>
               <p className="text-lg font-semibold">
-                {result.passed ? "Passed. Your grade is recorded." : "Not passed. Review the lesson and retake."}
+                {result.passed
+                  ? "Passed. Your grade is recorded."
+                  : "Not passed. Review the lesson and retake."}
               </p>
               <p className="text-[var(--course-ink-soft)] mt-1">
                 Raw score: {result.correct}/{result.total} ({Math.round(result.rawScore * 100)}%)
@@ -244,7 +265,11 @@ export function QuizView({ moduleId, moduleTitle, nextModuleId, briefing, isFina
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <button type="button" onClick={startQuiz} className="course-btn-secondary !py-2.5 !px-6 !text-sm">
+              <button
+                type="button"
+                onClick={startQuiz}
+                className="course-btn-secondary !py-2.5 !px-6 !text-sm"
+              >
                 Retake quiz
               </button>
               {result.passed && nextModuleId ? (
@@ -265,7 +290,10 @@ export function QuizView({ moduleId, moduleTitle, nextModuleId, briefing, isFina
                   >
                     Submit course
                   </button>
-                  <Link to="/learn/dashboard" className="course-btn-secondary !py-2.5 !px-6 !text-sm">
+                  <Link
+                    to="/learn/dashboard"
+                    className="course-btn-secondary !py-2.5 !px-6 !text-sm"
+                  >
                     Back to dashboard
                   </Link>
                 </>
@@ -311,10 +339,12 @@ function QuestionCard({
   showResults: boolean;
 }) {
   return (
-    <div className="course-card p-6 md:p-8">
+    <div className="course-card course-question p-5 md:p-7">
       <p className="text-sm text-[var(--course-ink-soft)] mb-2">Question {index + 1}</p>
-      <h2 className="text-lg font-medium">{question.prompt}</h2>
-      <div className="mt-4 space-y-2">
+      <h2 id={`quiz-prompt-${index}`} className="text-lg font-semibold">
+        {question.prompt}
+      </h2>
+      <div className="mt-4 space-y-2" role="group" aria-labelledby={`quiz-prompt-${index}`}>
         {question.options.map((option, optionIndex) => {
           const isSelected = selected === optionIndex;
           const isCorrect = optionIndex === question.correctIndex;
@@ -334,10 +364,19 @@ function QuestionCard({
               key={option}
               type="button"
               disabled={showResults}
+              aria-pressed={isSelected}
               onClick={() => onSelect(optionIndex)}
               className={className}
             >
               {option}
+              {showResults && isCorrect ? (
+                <span className="mt-1 block text-xs font-semibold text-emerald-800">
+                  Correct answer
+                </span>
+              ) : null}
+              {showResults && isSelected && !isCorrect ? (
+                <span className="mt-1 block text-xs font-semibold text-red-800">Your answer</span>
+              ) : null}
             </button>
           );
         })}

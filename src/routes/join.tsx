@@ -34,7 +34,11 @@ function JoinPage() {
     <>
       <PageHero
         eyebrow="Join"
-        title={<>Join the <span className="text-gradient-brand">Axiom community.</span></>}
+        title={
+          <>
+            Join the <span className="text-gradient-brand">Axiom community.</span>
+          </>
+        }
         sub="Create your member profile to get started with programs and updates."
       />
       <section className="relative pb-28 md:pb-32 px-6">
@@ -42,12 +46,12 @@ function JoinPage() {
           <Reveal>
             <div className="glass-strong rounded-3xl p-8 md:p-10">
               {submitted ? (
-                <div className="text-center">
+                <div role="status">
                   <h2 className="text-2xl font-semibold">You&apos;re signed up</h2>
                   <p className="mt-3 text-muted-foreground leading-relaxed">
                     {assignedIntern
                       ? `Your signup was linked to ${assignedIntern}.`
-                      : "Thanks for joining. We'll be in touch soon."}
+                      : "Your signup has been recorded."}
                   </p>
                 </div>
               ) : (
@@ -63,6 +67,7 @@ function JoinPage() {
                     </label>
                     <input
                       id="join-name"
+                      autoComplete="name"
                       value={name}
                       onChange={(event) => setName(event.target.value)}
                       required
@@ -75,6 +80,7 @@ function JoinPage() {
                     </label>
                     <input
                       id="join-email"
+                      autoComplete="email"
                       type="email"
                       value={email}
                       onChange={(event) => setEmail(event.target.value)}

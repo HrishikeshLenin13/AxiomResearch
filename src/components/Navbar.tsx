@@ -1,122 +1,166 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import { AxiomMark } from "./AxiomMark";
 
-const links = [
-  { to: "/", label: "Home" },
-  { to: "/about", label: "About" },
-  { to: "/programs", label: "Programs" },
-  { to: "/course", label: "Course" },
-  { to: "/volunteer", label: "Volunteer" },
-  { to: "/careers", label: "Careers" },
-  { to: "/research", label: "Research" },
-  { to: "/faq", label: "FAQ" },
-  { to: "/contact", label: "Contact" },
-];
+const groups = {
+  About: [
+    { to: "/about", label: "Mission and approach" },
+    { to: "/founders", label: "Meet the founders" },
+    { to: "/faq", label: "Frequently asked questions" },
+  ],
+  "Get involved": [
+    { to: "/join", label: "Join as a student" },
+    { to: "/volunteer", label: "Volunteer" },
+    { to: "/careers", label: "Careers and open roles" },
+  ],
+} as const;
+
+type Group = keyof typeof groups;
 
 export function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
-  const loc = useLocation();
+  const { pathname } = useLocation();
+  const [group, setGroup] = useState<Group | null>(null);
+  const [mobile, setMobile] = useState(false);
+  const header = useRef<HTMLElement>(null);
+  const mobileTrigger = useRef<HTMLButtonElement>(null);
+  const groupTriggers = useRef<Partial<Record<Group, HTMLButtonElement | null>>>({});
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    setGroup(null);
+    setMobile(false);
+  }, [pathname]);
 
-  useEffect(() => { setOpen(false); }, [loc.pathname]);
+  useEffect(() => {
+    if (!group && !mobile) return;
+
+    function closeOutside(event: PointerEvent) {
+      if (event.target instanceof Node && !header.current?.contains(event.target)) {
+        setGroup(null);
+        setMobile(false);
+      }
+    }
+
+    function dismiss(event: KeyboardEvent) {
+      if (event.key !== "Escape") return;
+      if (group) {
+        setGroup(null);
+        groupTriggers.current[group]?.focus();
+      } else {
+        setMobile(false);
+        mobileTrigger.current?.focus();
+      }
+    }
+
+    window.addEventListener("pointerdown", closeOutside);
+    window.addEventListener("keydown", dismiss);
+    return () => {
+      window.removeEventListener("pointerdown", closeOutside);
+      window.removeEventListener("keydown", dismiss);
+    };
+  }, [group, mobile]);
+
+  function linksFor(name: Group) {
+    return groups[name].map(({ to, label }) => (
+      <Link key={to} to={to} activeOptions={{ exact: true }} onClick={close}>
+        {label}
+      </Link>
+    ));
+  }
+
+  function close() {
+    setGroup(null);
+    setMobile(false);
+  }
+
+  function disclosure(name: Group, id: string) {
+    return (
+      <div className="site-nav-group">
+        <button
+          ref={(node) => {
+            groupTriggers.current[name] = node;
+          }}
+          type="button"
+          aria-expanded={group === name}
+          aria-controls={id}
+          data-current={groups[name].some(({ to }) => pathname === to)}
+          onClick={() => setGroup((current) => (current === name ? null : name))}
+        >
+          {name} <ChevronDown size={14} aria-hidden="true" />
+        </button>
+        <div className="site-nav-dropdown" id={id} hidden={group !== name}>
+          {linksFor(name)}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <motion.header
-      initial={{ y: -40, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled ? "py-3" : "py-5"
-      }`}
-    >
-      <div className="mx-auto max-w-7xl px-5">
-        <div className={`flex items-center justify-between rounded-full px-5 transition-all duration-500 ${
-          scrolled ? "glass-strong py-2.5 shadow-lg shadow-black/40" : "py-3"
-        }`}>
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="relative text-foreground">
-              <AxiomMark size={36} className="transition-transform duration-500 group-hover:rotate-[18deg]" />
-              <div className="absolute inset-0 bg-gradient-to-br from-violet/40 to-cyan-glow/30 blur-xl opacity-0 group-hover:opacity-70 transition-opacity" />
-            </div>
-            <span className="font-display font-semibold tracking-tight text-lg">Axiom</span>
+    <header className="site-header" ref={header}>
+      <div className="site-wrap site-header-inner">
+        <Link to="/" className="site-brand" aria-label="Axiom home" onClick={close}>
+          <AxiomMark size={27} /> Axiom
+        </Link>
+        <nav className="site-nav" aria-label="Primary">
+          {disclosure("About", "site-about")}
+          <Link to="/programs" onClick={close}>
+            Programs
           </Link>
-
-          <nav className="hidden lg:flex items-center gap-1">
-            {links.map((l) => {
-              const active = loc.pathname === l.to;
-              return (
-                <Link
-                  key={l.to}
-                  to={l.to}
-                  className={`relative px-3.5 py-2 text-sm rounded-full transition-colors ${
-                    active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {active && (
-                    <motion.span
-                      layoutId="nav-pill"
-                      className="absolute inset-0 rounded-full bg-white/5 border border-white/10"
-                      transition={{ type: "spring", stiffness: 400, damping: 35 }}
-                    />
-                  )}
-                  <span className="relative">{l.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
-
-          <div className="hidden lg:block">
-            <Link
-              to="/volunteer"
-              className="inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition"
-            >
-              Join Axiom
-            </Link>
-          </div>
-
+          <Link to="/research" onClick={close}>
+            Research
+          </Link>
+          <Link to="/course" onClick={close}>
+            Learn
+          </Link>
+          {disclosure("Get involved", "site-involved")}
+        </nav>
+        <div className="site-header-actions">
+          <Link to="/contact" className="site-contact" onClick={close}>
+            Contact
+          </Link>
+          <Link to="/join" className="site-button site-button-small" onClick={close}>
+            Join Axiom
+          </Link>
           <button
-            className="lg:hidden p-2 rounded-full glass"
-            onClick={() => setOpen((o) => !o)}
-            aria-label="Menu"
+            type="button"
+            ref={mobileTrigger}
+            className="site-mobile-trigger"
+            onClick={() => setMobile((value) => !value)}
+            aria-expanded={mobile}
+            aria-controls="site-mobile-nav"
+            aria-label={mobile ? "Close navigation" : "Open navigation"}
           >
-            {open ? <X size={18} /> : <Menu size={18} />}
+            {mobile ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
           </button>
         </div>
-
-        <AnimatePresence>
-          {open && (
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              className="lg:hidden mt-3 glass-strong rounded-3xl p-4 flex flex-col"
-            >
-              {links.map((l) => (
-                <Link
-                  key={l.to}
-                  to={l.to}
-                  className="px-4 py-3 text-sm rounded-xl hover:bg-white/5"
-                >
-                  {l.label}
-                </Link>
-              ))}
-              <Link to="/volunteer" className="mt-2 text-center bg-primary text-primary-foreground rounded-xl px-4 py-3 font-medium">
-                Join Axiom
-              </Link>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
-    </motion.header>
+      <nav
+        className="site-mobile-nav site-wrap"
+        id="site-mobile-nav"
+        hidden={!mobile}
+        aria-label="Mobile primary"
+      >
+        <div className="site-mobile-group">
+          <p>Explore Axiom</p>
+          {linksFor("About")}
+          <Link to="/programs" onClick={close}>
+            Programs
+          </Link>
+          <Link to="/research" onClick={close}>
+            Research
+          </Link>
+          <Link to="/course" onClick={close}>
+            Research Foundations course
+          </Link>
+        </div>
+        <div className="site-mobile-group">
+          <p>Get involved</p>
+          {linksFor("Get involved")}
+          <Link to="/contact" onClick={close}>
+            Contact
+          </Link>
+        </div>
+      </nav>
+    </header>
   );
 }
